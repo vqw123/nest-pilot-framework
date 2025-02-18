@@ -1,15 +1,18 @@
-import { ConfigService } from '@config/config/service/config.service';
-import { LoggerModule } from '@logger/logger';
-import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@libs/config';
+import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(private readonly configService: ConfigService) {
-    console.log(this.configService.get('database'));
+    const options = this.configService.get('database');
+
+    this.logger.log(options);
   }
 
   getHello(): string {
-    LoggerModule;
     return 'Hello World!';
   }
 }
+3;

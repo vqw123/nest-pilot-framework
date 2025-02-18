@@ -1,25 +1,26 @@
-import { DynamicModule, Global, Module } from '@nestjs/common';
+import { DynamicModule, Global, Module, Logger } from '@nestjs/common';
+import { ConfigService } from './service/config.service';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
-import { ConfigService } from './service/config.service';
-import { getYamlFiles } from './util/config.util';
 
-@Global() // ✅ 전역 모듈 설정
+@Global()
 @Module({})
 export class ConfigModule {
+  private static readonly logger = new Logger(ConfigModule.name);
+
   static forRoot(): DynamicModule {
     const env = process.env.NODE_ENV || 'local';
     const sourceDir = path.join(__dirname, `../../../../env/${env}`);
     const destDir = path.join(__dirname, `../../../../dist/env`);
 
-    // ✅ `.yml` 파일 목록 가져오기 (glob 없이)
-    const configFiles = getYamlFiles(sourceDir);
+    // `.yml` 파일 목록 가져오기
+    const configFiles = ConfigModule.getYamlFiles(sourceDir);
 
-    // ✅ `.yml` 파일을 `dist/env/`로 복사
+    // `.yml` 파일을 `dist/env/`로 복사
     const copiedFiles = ConfigModule.copyConfigFiles(configFiles, destDir);
 
-    // ✅ `.yml` 파일을 로드하여 객체로 변환
+    // `.yml` 파일을 로드하여 객체로 변환
     const configData = ConfigModule.loadConfigFiles(copiedFiles);
 
     return {
@@ -27,11 +28,11 @@ export class ConfigModule {
       providers: [
         {
           provide: 'CONFIG',
-          useValue: configData, // ✅ 모든 로드된 설정 데이터를 제공
+          useValue: configData, // 모든 로드된 설정 데이터를 제공
         },
         ConfigService,
       ],
-      exports: ['CONFIG', ConfigService], // ✅ ConfigService를 전역으로 사용 가능하도록 설정
+      exports: ['CONFIG', ConfigService], // ConfigService를 전역으로 사용 가능하도록 설정
     };
   }
 
@@ -48,7 +49,7 @@ export class ConfigModule {
 
       fs.copyFileSync(srcFile, destFile);
       copiedFiles.push(destFile);
-      console.log(`✅ Copied ${fileName} to ${destDir}`);
+      ConfigModule.logger.log(`✅ Copied ${fileName} to ${destDir}`);
     });
 
     return copiedFiles;
@@ -66,5 +67,17 @@ export class ConfigModule {
     });
 
     return configData;
+  }
+
+  private static getYamlFiles(directory: string): string[] {
+    if (!fs.existsSync(directory)) {
+      ConfigModule.logger.warn(`Config directory ${directory} does not exist.`);
+      return [];
+    }
+
+    return fs
+      .readdirSync(directory)
+      .filter((file) => file.endsWith('.yml')) // `.yml` 확장자 필터링
+      .map((file) => path.join(directory, file)); // 절대 경로로 변환
   }
 }

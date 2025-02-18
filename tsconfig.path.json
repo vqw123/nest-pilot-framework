@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "paths": {
-      "@logger/logger": ["libs/logger/src"],
-      "@logger/logger/*": ["libs/logger/src/*"],
-      "@config/config": ["libs/config/src"],
-      "@config/config/*": ["libs/config/src/*"]
+      "@libs/logger": ["libs/logger/src"],
+      "@libs/logger/*": ["libs/logger/src/*"],
+      "@libs/config": ["libs/config/src"],
+      "@libs/config/*": ["libs/config/src/*"]
     }
   }
 }
