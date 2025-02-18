@@ -1,0 +1,10 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode", // ✅ Prettier를 기본 포맷터로 설정
+  "editor.formatOnSave": true, // ✅ 저장 시 자동 포맷 적용
+  "editor.formatOnPaste": true, // ✅ 붙여넣기 시 자동 포맷
+  "editor.formatOnType": true, // ✅ 입력 시 자동 포맷
+  "prettier.requireConfig": true, // ✅ `.prettierrc` 또는 `eslint.config.mjs`가 있는 경우만 적용
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode" // ✅ TypeScript 파일은 Prettier 적용
+  }
+}

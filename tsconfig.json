@@ -1,0 +1,33 @@
+{
+  "extends": "./tsconfig.path.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "target": "ES2021",
+    "outDir": "./dist",
+    "sourceMap": true,
+    "incremental": true,
+    "removeComments": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "strictBindCallApply": false,
+    "strictPropertyInitialization": true,
+    "noImplicitReturns": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": false,
+    "lib": ["ES2021", "DOM"],
+    "types": ["node"],
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "downlevelIteration": true,
+    "allowJs": true,
+    "baseUrl": "./"
+  }
+}

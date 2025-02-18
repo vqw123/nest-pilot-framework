@@ -1,0 +1,11 @@
+# env
+**/*.yml
+**/*.yaml
+
+# settings
+.vscode/*
+
+
+node_modules
+dist
+build
