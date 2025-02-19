@@ -16,8 +16,8 @@ export class RequestUtil {
     return (typeof remoteIp === 'string' ? remoteIp : (remoteIp[0] ?? ''))
       .split(',')[0]
       .trim()
-      .replace(/:\d+$/, '') // ✅ IPv6 주소에서 포트 제거
-      .replace(/^::ffff:/, ''); // ✅ IPv4-mapped IPv6 변환
+      .replace(/:\d+$/, '') // IPv6 주소에서 포트 제거
+      .replace(/^::ffff:/, ''); // IPv4-mapped IPv6 변환
   }
 
   static getClientCountry(request: Request): string {
