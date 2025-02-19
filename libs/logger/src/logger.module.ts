@@ -14,7 +14,7 @@ export class LoggerModule {
             level: true,
           }),
           winston.format.timestamp({
-            format: 'YYYY-MM-DD HH:mm:ss.SSS',
+            format: 'YYYY-MM-DD HH:mm:ss.ms',
           }),
           winston.format.printf((info) => {
             const { timestamp, level, message, context, ...meta } = info;

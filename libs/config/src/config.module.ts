@@ -49,7 +49,7 @@ export class ConfigModule {
 
       fs.copyFileSync(srcFile, destFile);
       copiedFiles.push(destFile);
-      ConfigModule.logger.log(`✅ Copied ${fileName} to ${destDir}`);
+      ConfigModule.logger.log(`Copied ${fileName} to ${destDir}`);
     });
 
     return copiedFiles;

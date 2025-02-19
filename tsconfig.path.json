@@ -4,7 +4,9 @@
       "@libs/logger": ["libs/logger/src"],
       "@libs/logger/*": ["libs/logger/src/*"],
       "@libs/config": ["libs/config/src"],
-      "@libs/config/*": ["libs/config/src/*"]
+      "@libs/config/*": ["libs/config/src/*"],
+      "@libs/common": ["libs/common/src"],
+      "@libs/common/*": ["libs/common/src/*"]
     }
   }
 }
