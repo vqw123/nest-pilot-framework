@@ -1,33 +1,51 @@
 {
   "extends": "./tsconfig.path.json",
+
   "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "target": "ES2021",
-    "outDir": "./dist",
-    "sourceMap": true,
-    "incremental": true,
-    "removeComments": true,
-    "strict": true,
-    "noImplicitAny": false,
-    "strictNullChecks": true,
-    "strictBindCallApply": false,
-    "strictPropertyInitialization": true,
-    "noImplicitReturns": true,
-    "forceConsistentCasingInFileNames": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": false,
-    "lib": ["ES2021", "DOM"],
-    "types": ["node"],
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "skipLibCheck": true,
-    "downlevelIteration": true,
-    "allowJs": true,
-    "baseUrl": "./"
+    // 모듈 관련 설정
+    "module": "CommonJS", // CommonJS 모듈 시스템 사용 (Node.js 환경)
+    "moduleResolution": "node", // Node.js 방식의 모듈 해석 사용
+    "esModuleInterop": true, // ES6 모듈을 CommonJS와 호환 가능하도록 설정
+    "allowSyntheticDefaultImports": true, // 기본(default) export가 없어도 import 가능하도록 설정
+    "resolveJsonModule": true, // JSON 파일을 import 가능하게 설정
+
+    // JavaScript 버전 및 타겟
+    "target": "ES2021", // ES2021 문법을 사용하여 트랜스파일링
+
+    // 출력 디렉토리 및 빌드 관련 설정
+    "outDir": "./dist", // 컴파일된 파일이 저장될 디렉토리
+    "sourceMap": true, // 소스맵(.map) 파일을 생성하여 디버깅 가능하도록 설정
+    "incremental": true, // 점진적 빌드를 활성화하여 빌드 속도 최적화
+
+    // 코드 품질 및 타입 검사 관련 설정
+    "strict": true, // 엄격한 타입 검사를 활성화 (하위 설정 포함)
+    "noImplicitAny": true, // `any` 타입을 명시적으로 선언하지 않으면 에러 발생
+    "strictNullChecks": false, // `null` 및 `undefined` 타입을 엄격하게 검사하지 않음
+    "strictFunctionTypes": true, // 함수 타입을 보다 엄격하게 검사
+    "strictBindCallApply": true, // `bind`, `call`, `apply` 메서드의 타입 검사를 엄격하게 수행
+    "strictPropertyInitialization": false, // 클래스의 속성이 반드시 초기화되도록 요구하지 않음
+    "noImplicitThis": true, // `this`가 암시적으로 `any`가 되는 것을 방지
+    "noUnusedLocals": true, // 사용되지 않는 지역 변수가 있으면 경고 발생
+    "noUnusedParameters": true, // 사용되지 않는 함수 매개변수가 있으면 경고 발생
+    "noImplicitReturns": true, // 함수가 항상 값을 반환하도록 강제
+    "noFallthroughCasesInSwitch": true, // switch 문에서 case를 빠져나오지 않으면 에러 발생
+    "noUncheckedIndexedAccess": false, // 인덱스 시그니처 속성의 타입 검사를 비활성화
+
+    // 파일 및 디렉토리 관련 설정
+    "forceConsistentCasingInFileNames": true, // 파일 경로에서 대소문자 일관성을 강제
+    "lib": ["ES2021", "DOM"], // 사용할 라이브러리 지정 (ES2021 + DOM API)
+    "types": ["node"], // 사용할 타입 정의 파일 지정 (Node.js)
+
+    // 데코레이터 및 실험적 기능 관련 설정
+    "emitDecoratorMetadata": true, // 런타임에 데코레이터 메타데이터를 생성 (TypeORM 및 NestJS에서 필요)
+    "experimentalDecorators": true, // 실험적 데코레이터 기능을 활성화
+
+    // 성능 및 기타 설정
+    "skipLibCheck": true, // `node_modules` 내의 `.d.ts` 파일 검사를 건너뜀 (빌드 속도 향상)
+    "downlevelIteration": true, // ES5 이하의 환경에서도 `for...of` 문이 동작하도록 설정
+    "allowJs": true, // `.js` 파일을 TypeScript에서 사용할 수 있도록 허용
+
+    // 프로젝트 루트 관련 설정
+    "baseUrl": "./" // 모듈 해석 시 기준이 되는 기본 경로 설정
   }
 }

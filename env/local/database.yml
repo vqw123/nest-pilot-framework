@@ -4,26 +4,9 @@ database:
     host: 'localhost'
     port: 3306
     username: 'root'
-    password: 'password'
-    database: 'db_tournament'
+    password: 'SuperTree!@#$7890'
     timezone: 'Z' # UTC
     entities: ['dist/**/*.entity.{ts,js}']
-    #migrations: ['dist/migrations/**/*.{ts,js}']
-    #cli: {
-    #  migrationsDir: 'src/migrations'
-    #}
     maxQueryExecutionTime: 1000 # log for long query 
-    synchronize: true
-    logging: true # query logging
-    #logging: ['query', 'error', 'scheme', 'warn', 'info', 'log', 'all']
-    #debug: true
-    #trace: true
-    #cache:
-    #  type: 'redis'
-    #  options:
-    #    host: 'localhost'
-    #    port: 6379
-    #  #alwaysEnabled: false
-    #  duration: 10000
-    #  ignoreErrors: true
-    
+    synchronize: false
+    logging: true 

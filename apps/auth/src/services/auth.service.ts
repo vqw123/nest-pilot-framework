@@ -7,8 +7,8 @@ export class AuthService {
 
   constructor(private readonly configService: ConfigService) {
     const options = this.configService.get('database');
-
-    this.logger.log(options);
+    options;
+    this.logger.log('AuthService');
   }
 
   getHello(): string {

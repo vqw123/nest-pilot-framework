@@ -64,7 +64,6 @@ export default [
   // ✅ Prettier 설정 추가 (Prettier와 ESLint 충돌 방지)
   prettier,
 
-  // ✅ 추가된 옵션 (네 설정에서 반영되지 않은 부분)
   {
     root: true, // ✅ 프로젝트의 최상위 ESLint 설정
     ignores: ['.eslintrc.js', 'test/**/*.ts', '**/*.spec.ts'], // ✅ 특정 파일 ESLint 무시
