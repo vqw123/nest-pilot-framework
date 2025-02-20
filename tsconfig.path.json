@@ -8,7 +8,9 @@
       "@libs/common": ["libs/common/src"],
       "@libs/common/*": ["libs/common/src/*"],
       "@libs/database": ["libs/database/src"],
-      "@libs/database/*": ["libs/database/src/*"]
+      "@libs/database/*": ["libs/database/src/*"],
+      "@libs/redis": ["libs/redis/src"],
+      "@libs/redis/*": ["libs/redis/src/*"]
     }
   }
 }

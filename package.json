@@ -24,6 +24,7 @@
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "^11.0.0",
+    "ioredis": "^5.5.0",
     "js-yaml": "^4.1.0",
     "mysql2": "^3.12.0",
     "nest-winston": "^1.10.2",
@@ -84,7 +85,8 @@
       "^@libs/common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "^@libs/config(|/.*)$": "<rootDir>/libs/config/src/$1",
       "^@libs/database(|/.*)$": "<rootDir>/libs/database/src/$1",
-      "^@libs/logger(|/.*)$": "<rootDir>/libs/logger/src/$1"
+      "^@libs/logger(|/.*)$": "<rootDir>/libs/logger/src/$1",
+      "^@libs/redis(|/.*)$": "<rootDir>/libs/redis/src/$1"
     }
   }
 }

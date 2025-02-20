@@ -1,23 +1,24 @@
 # https://github.com/liaoliaots/nestjs-redis
 
 redis:
-  config: 
-    - namespace: 'default'
-      host: 'localhost'
-      port: 6379
-      #password: 'password'
+  default:
+    config: 
+      - namespace: 'default'
+        host: 'localhost'
+        port: 6379
+        #password: 'password'
 
-  ## If set to `true`, all clients will be closed automatically on nestjs application shutdown.
-  ## @default: `true`
-  #closeClient: true;
+    ## If set to `true`, all clients will be closed automatically on nestjs application shutdown.
+    ## @default: `true`
+    #closeClient: true;
 
-  ## If set to `true`, then ready logging will be displayed when the client is ready.
-  ## @default: `false`
-  readyLog: true;
+    ## If set to `true`, then ready logging will be displayed when the client is ready.
+    ## @default: `false`
+    readyLog: true;
 
-  ## If set to `true`, then errors that occurred while connecting will be displayed by the built-in logger.
-  ## @default: `true`
-  #errorLog: true;
+    ## If set to `true`, then errors that occurred while connecting will be displayed by the built-in logger.
+    ## @default: `true`
+    #errorLog: true;
 
-  ## Common options to be passed to each client.
-  #commonOptions: RedisOptions;
+    ## Common options to be passed to each client.
+    #commonOptions: RedisOptions;
