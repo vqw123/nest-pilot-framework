@@ -10,7 +10,9 @@
       "@libs/database": ["libs/database/src"],
       "@libs/database/*": ["libs/database/src/*"],
       "@libs/redis": ["libs/redis/src"],
-      "@libs/redis/*": ["libs/redis/src/*"]
+      "@libs/redis/*": ["libs/redis/src/*"],
+      "@libs/health": ["libs/health/src"],
+      "@libs/health/*": ["libs/health/src/*"]
     }
   }
 }

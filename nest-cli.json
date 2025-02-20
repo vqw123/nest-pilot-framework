@@ -42,6 +42,24 @@
         "tsConfigPath": "libs/database/tsconfig.lib.json"
       }
     },
+    "example": {
+      "type": "application",
+      "root": "apps/example",
+      "entryFile": "main",
+      "sourceRoot": "apps/example/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/example/tsconfig.app.json"
+      }
+    },
+    "health": {
+      "type": "library",
+      "root": "libs/health",
+      "entryFile": "index",
+      "sourceRoot": "libs/health/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/health/tsconfig.lib.json"
+      }
+    },
     "logger": {
       "type": "library",
       "root": "libs/logger",
