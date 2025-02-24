@@ -17,6 +17,16 @@ export class LoggerModule {
             format: 'YYYY-MM-DD HH:mm:ss.ms',
           }),
           winston.format.printf((info) => {
+            if (info[Symbol.for('level')] == 'error') {
+              if (
+                Array.isArray(info?.stack) &&
+                info?.stack.length === 1 &&
+                info?.stack[0] === undefined
+              ) {
+                delete info.stack; // Nest.js Logger에 error 호출 시 stack 이 자동으로 추가됨. 노출 할 필요 없는 stack 은 로그에서 제외
+              }
+            }
+
             const { timestamp, level, message, context, ...meta } = info;
             const metaString = Object.keys(meta).length ? `\n${JSON.stringify(meta, null, 2)}` : '';
             return `[${timestamp}] ${level} (${context || 'Unknown'}) - ${message ?? ''}${metaString}`;

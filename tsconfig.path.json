@@ -12,7 +12,9 @@
       "@libs/redis": ["libs/redis/src"],
       "@libs/redis/*": ["libs/redis/src/*"],
       "@libs/health": ["libs/health/src"],
-      "@libs/health/*": ["libs/health/src/*"]
+      "@libs/health/*": ["libs/health/src/*"],
+      "@libs/error": ["libs/error/src"],
+      "@libs/error/*": ["libs/error/src/*"]
     }
   }
 }
