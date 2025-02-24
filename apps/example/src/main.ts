@@ -7,8 +7,14 @@ import { GlobalExceptionFilter } from '@libs/error/filter/global.exception.filte
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(ExampleModule);
 
+  /**
+   * Request & Response Logging
+   */
   app.useGlobalInterceptors(new HttpLoggerInterceptor());
 
+  /**
+   * Error Handling Filter
+   */
   app.useGlobalFilters(
     new HttpExceptionFilter(),
     new DatabaseExceptionFilter(),

@@ -10,9 +10,9 @@ import { HealthModule } from '@libs/health';
 @Module({
   imports: [
     LoggerModule.forRoot(),
-    ConfigModule.forRoot(),
-    DatabaseModule.forRoot('default', []),
-    RedisModule.forRoot('default'),
+    ConfigModule.forRoot('example'),
+    DatabaseModule.forRoot(),
+    RedisModule.forRoot(),
     HealthModule,
   ],
   controllers: [ExampleController],

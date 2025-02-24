@@ -9,10 +9,10 @@ import * as yaml from 'js-yaml';
 export class ConfigModule {
   private static readonly logger = new Logger(ConfigModule.name);
 
-  static forRoot(): DynamicModule {
+  static forRoot(appName: string): DynamicModule {
     const env = process.env.NODE_ENV || 'local';
-    const sourceDir = path.join(__dirname, `../../../../env/${env}`);
-    const destDir = path.join(__dirname, `../../../../dist/env`);
+    const sourceDir = path.join(__dirname, `../../../../apps/${appName}/config/${env}`);
+    const destDir = path.join(__dirname, `../../../../dist/config`);
 
     // `.yml` 파일 목록 가져오기
     const configFiles = ConfigModule.getYamlFiles(sourceDir);

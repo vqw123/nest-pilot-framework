@@ -6,7 +6,6 @@ import { EntitySchema, MixedList } from 'typeorm';
 @Module({})
 export class DatabaseModule {
   static forRoot(
-    dbKey: string = 'default',
     entities: MixedList<Function | string | EntitySchema> = ['dist/**/*.entity.{ts,js}'],
   ): DynamicModule {
     return {
@@ -15,10 +14,10 @@ export class DatabaseModule {
         TypeOrmModule.forRootAsync({
           inject: [ConfigService],
           useFactory: (configService: ConfigService) => {
-            const dbConfig = configService.get(`database.${dbKey}`) as TypeOrmModuleOptions;
+            const dbConfig = configService.get(`database`) as TypeOrmModuleOptions;
 
             if (!dbConfig) {
-              throw new Error(`Database configuration for '${dbKey}' not found`);
+              throw new Error(`Database configuration error`);
             }
 
             return { ...dbConfig, entities } as TypeOrmModuleOptions;

@@ -5,16 +5,16 @@ import { RedisService } from './service/redis.service';
 
 @Module({})
 export class RedisModule {
-  static forRoot(redisKey: string = 'default'): DynamicModule {
+  static forRoot(): DynamicModule {
     return {
       module: RedisModule,
       providers: [
         {
           provide: 'REDIS_CLIENT',
           useFactory: (configService: ConfigService) => {
-            const redisConfig = configService.get<RedisOptions>(`redis.${redisKey}`);
+            const redisConfig = configService.get<RedisOptions>(`redis`);
             if (!redisConfig) {
-              throw new Error(`Redis configuration for '${redisKey}' not found`);
+              throw new Error(`Redis configuration error`);
             }
             return new Redis(redisConfig); //ioredis 인스턴스 생성
           },
