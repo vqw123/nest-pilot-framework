@@ -1,0 +1,14 @@
+app:
+  name: "example-server"
+  version: "1.0.0"
+
+server:
+  port: 3000
+
+# logger:
+#   level: "debug"
+
+# security:
+#   rateLimit:
+#     max: 100
+#     windowMs: 60000

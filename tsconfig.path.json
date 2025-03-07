@@ -14,7 +14,9 @@
       "@libs/health": ["libs/health/src"],
       "@libs/health/*": ["libs/health/src/*"],
       "@libs/error": ["libs/error/src"],
-      "@libs/error/*": ["libs/error/src/*"]
+      "@libs/error/*": ["libs/error/src/*"],
+      "@libs/swagger": ["libs/swagger/src"],
+      "@libs/swagger/*": ["libs/swagger/src/*"]
     }
   }
 }

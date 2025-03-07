@@ -1,7 +1,7 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, Logger } from '@nestjs/common';
 import { Response } from 'express';
 import { ResponseError } from '@libs/error/response-error';
-import { CustomHttpException } from '../ excetpion/custom.http.exception';
+import { CustomHttpException } from '../excetpion/custom.http.exception';
 import { ErrorCode } from '../error-code';
 import { EOL } from 'os';
 
