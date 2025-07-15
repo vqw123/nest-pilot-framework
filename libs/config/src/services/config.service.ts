@@ -1,8 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { CONFIG } from '../constants/config.constants';
 
 @Injectable()
 export class ConfigService {
-  constructor(@Inject('CONFIG') private readonly config: Record<string, any>) {}
+  constructor(@Inject(CONFIG) private readonly config: Record<string, any>) {}
 
   get<T = any>(key: string): T | undefined {
     return key

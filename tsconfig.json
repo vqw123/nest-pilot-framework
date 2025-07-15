@@ -34,7 +34,7 @@
     // 파일 및 디렉토리 관련 설정
     "forceConsistentCasingInFileNames": true, // 파일 경로에서 대소문자 일관성을 강제
     "lib": ["ES2021", "DOM"], // 사용할 라이브러리 지정 (ES2021 + DOM API)
-    "types": ["node"], // 사용할 타입 정의 파일 지정 (Node.js)
+    "types": ["node", "jest"], // 사용할 타입 정의 파일 지정 (Node.js)
 
     // 데코레이터 및 실험적 기능 관련 설정
     "emitDecoratorMetadata": true, // 런타임에 데코레이터 메타데이터를 생성 (TypeORM 및 NestJS에서 필요)
