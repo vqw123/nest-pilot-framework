@@ -9,7 +9,9 @@ import { HealthModule } from '@libs/health';
 
 @Module({
   imports: [
-    LoggerModule.forRoot(),
+    LoggerModule.forRoot({
+      enableHttpInterceptor: true,
+    }),
     ConfigModule.forRoot({
       appName: 'example',
     }),

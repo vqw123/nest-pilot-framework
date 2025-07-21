@@ -24,6 +24,7 @@ export class ExampleService {
     await this.redis.set('aaa', 'sss');
 
     const data = await this.redis.get('aaa');
+
     this.logger.log(data);
     this.logger.log({
       a: 1,
