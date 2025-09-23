@@ -6,6 +6,7 @@ import { ConfigModule } from '@libs/config';
 import { DatabaseModule } from '@libs/database';
 import { RedisModule } from '@libs/redis';
 import { HealthModule } from '@libs/health';
+import { ErrorModule } from '@libs/error';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { HealthModule } from '@libs/health';
     ConfigModule.forRoot({
       appName: 'example',
     }),
+    ErrorModule.forRoot({}),
     DatabaseModule.forRoot(),
     RedisModule.forRoot(),
     HealthModule,

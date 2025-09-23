@@ -25,4 +25,24 @@ export class RedisModule {
       exports: ['REDIS_CLIENT', RedisService], //다른 모듈에서 Redis 사용 가능하도록 export
     };
   }
+
+  // static forRootAsync(options: SwaggerModuleAsyncOptions, isGlobal = true): DynamicModule {
+  //   if (!options.useFactory) {
+  //     throw new Error(`Swagger configuration error`);
+  //   }
+
+  //   const providers: Provider[] = [
+  //     ...createAsyncProviders(options),
+  //     SwaggerService,
+  //     ...(options.extraProviders ?? []),
+  //   ];
+
+  //   return {
+  //     global: isGlobal,
+  //     module: SwaggerModule,
+  //     imports: options.imports,
+  //     providers,
+  //     exports: [SwaggerService],
+  //   };
+  // }
 }
