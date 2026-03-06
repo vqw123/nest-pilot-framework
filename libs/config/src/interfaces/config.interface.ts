@@ -1,4 +1,3 @@
-export interface ConfigModuleOptions {
-  appName?: string;
-  configPath?: string;
-}
+export type ConfigModuleOptions =
+  | { appName: string; configPath?: never }
+  | { configPath: string; appName?: never };
