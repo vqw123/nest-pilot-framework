@@ -53,10 +53,10 @@ export class AppModule {}
 
 ```typescript
 ValidationModule.forRoot({
-  whitelist: true,           // DTO에 없는 필드 자동 제거
+  whitelist: true, // DTO에 없는 필드 자동 제거
   forbidNonWhitelisted: true, // DTO에 없는 필드 요청 시 400
-  transform: true,           // string → number 등 타입 자동 변환
-})
+  transform: true, // string → number 등 타입 자동 변환
+});
 ```
 
 DTO 예시:
@@ -73,6 +73,38 @@ export class CreateUserDto {
   password: string;
 }
 ```
+
+### SecurityModule
+
+Helmet(HTTP 보안 헤더)과 CORS를 모듈 기반으로 설정합니다.
+
+```typescript
+import { SecurityModule } from '@libs/common';
+
+SecurityModule.forRoot({
+  helmet: {}, // Helmet 기본 옵션으로 활성화
+  cors: { origin: '*' }, // CORS 활성화
+});
+```
+
+옵션을 생략하면 해당 기능이 비활성화됩니다.
+
+```typescript
+// Helmet만 적용
+SecurityModule.forRoot({ helmet: {} });
+
+// CORS만 적용
+SecurityModule.forRoot({ cors: { origin: 'https://example.com' } });
+```
+
+**Helmet 주요 보안 헤더:**
+
+| 헤더                        | 방어                       |
+| --------------------------- | -------------------------- |
+| `X-Content-Type-Options`    | MIME 타입 스니핑 방지      |
+| `X-Frame-Options`           | 클릭재킹(iframe 삽입) 방지 |
+| `Strict-Transport-Security` | HTTPS 강제                 |
+| `X-XSS-Protection`          | XSS 방어                   |
 
 ## 참고
 
