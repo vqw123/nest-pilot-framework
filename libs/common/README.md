@@ -36,6 +36,44 @@ const ip = RequestUtil.getClientIp(request);
 const country = RequestUtil.getClientCountry(request);
 ```
 
+### ValidationModule
+
+`class-validator`, `class-transformer` 기반의 전역 ValidationPipe를 등록합니다.
+
+```typescript
+import { ValidationModule } from '@libs/common';
+
+@Module({
+  imports: [ValidationModule.forRoot()],
+})
+export class AppModule {}
+```
+
+`ValidationPipeOptions`를 그대로 받아서 NestJS `ValidationPipe`에 전달합니다. 옵션은 앱에서 직접 결정합니다.
+
+```typescript
+ValidationModule.forRoot({
+  whitelist: true,           // DTO에 없는 필드 자동 제거
+  forbidNonWhitelisted: true, // DTO에 없는 필드 요청 시 400
+  transform: true,           // string → number 등 타입 자동 변환
+})
+```
+
+DTO 예시:
+
+```typescript
+import { IsEmail, IsString, MinLength } from 'class-validator';
+
+export class CreateUserDto {
+  @IsEmail()
+  email: string;
+
+  @IsString()
+  @MinLength(8)
+  password: string;
+}
+```
+
 ## 참고
 
 - `RequestContext`는 `LoggerModule`의 `HttpLoggerInterceptor`가 자동으로 초기화합니다.
