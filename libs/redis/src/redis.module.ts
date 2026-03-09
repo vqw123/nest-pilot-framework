@@ -1,48 +1,49 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigService } from '@libs/config';
-import { Redis, RedisOptions } from 'ioredis';
+import { DynamicModule, Module, Provider } from '@nestjs/common';
+import { RedisModuleOptions, RedisModuleAsyncOptions } from './interfaces/redis.interface';
+import { REDIS_CLIENTS, REDIS_MODULE_OPTIONS } from './constants/redis.constants';
+import { createRedisClients } from './providers/redis.providers';
 import { RedisService } from './service/redis.service';
 
 @Module({})
 export class RedisModule {
-  static forRoot(): DynamicModule {
+  static forRoot(options: RedisModuleOptions): DynamicModule {
+    const providers: Provider[] = [
+      {
+        provide: REDIS_CLIENTS,
+        useFactory: () => createRedisClients(options),
+      },
+      RedisService,
+    ];
+
     return {
+      global: true,
       module: RedisModule,
-      providers: [
-        {
-          provide: 'REDIS_CLIENT',
-          useFactory: (configService: ConfigService) => {
-            const redisConfig = configService.get<RedisOptions>(`redis`);
-            if (!redisConfig) {
-              throw new Error(`Redis configuration error`);
-            }
-            return new Redis(redisConfig); //ioredis 인스턴스 생성
-          },
-          inject: [ConfigService],
-        },
-        RedisService, //RedisService를 주입 가능하게 설정
-      ],
-      exports: ['REDIS_CLIENT', RedisService], //다른 모듈에서 Redis 사용 가능하도록 export
+      providers,
+      exports: [RedisService],
     };
   }
 
-  // static forRootAsync(options: SwaggerModuleAsyncOptions, isGlobal = true): DynamicModule {
-  //   if (!options.useFactory) {
-  //     throw new Error(`Swagger configuration error`);
-  //   }
+  static forRootAsync(options: RedisModuleAsyncOptions): DynamicModule {
+    const providers: Provider[] = [
+      {
+        provide: REDIS_MODULE_OPTIONS,
+        useFactory: options.useFactory,
+        inject: options.inject ?? [],
+      },
+      {
+        provide: REDIS_CLIENTS,
+        useFactory: (moduleOptions: RedisModuleOptions) => createRedisClients(moduleOptions),
+        inject: [REDIS_MODULE_OPTIONS],
+      },
+      RedisService,
+    ];
 
-  //   const providers: Provider[] = [
-  //     ...createAsyncProviders(options),
-  //     SwaggerService,
-  //     ...(options.extraProviders ?? []),
-  //   ];
-
-  //   return {
-  //     global: isGlobal,
-  //     module: SwaggerModule,
-  //     imports: options.imports,
-  //     providers,
-  //     exports: [SwaggerService],
-  //   };
-  // }
+    return {
+      global: true,
+      module: RedisModule,
+      imports: options.imports ?? [],
+      providers,
+      exports: [RedisService],
+    };
+  }
 }

@@ -1,0 +1,3 @@
+export const REDIS_CLIENTS = 'REDIS_CLIENTS';
+export const REDIS_MODULE_OPTIONS = 'REDIS_MODULE_OPTIONS';
+export const DEFAULT_REDIS_NAMESPACE = 'default';
