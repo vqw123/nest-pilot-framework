@@ -11,7 +11,7 @@ export class HttpLoggerInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return new Observable((subscriber) => {
       RequestContext.run(() => {
-        const requestId = randomUUID();
+        const requestId = (request.headers['x-correlation-id'] as string) ?? randomUUID();
         RequestContext.set('requestId', requestId);
 
         const request = context.switchToHttp().getRequest();
