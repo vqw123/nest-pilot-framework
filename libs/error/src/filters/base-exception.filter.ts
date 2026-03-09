@@ -17,7 +17,7 @@ export abstract class BaseExceptionFilter<T = unknown> implements ExceptionFilte
     exception: unknown,
     response: Response,
     message = 'Unexpected error occurred.',
-    code = BaseErrorCode.INTERNAL_SERVER_ERROR,
+    code: string = BaseErrorCode.INTERNAL_SERVER_ERROR,
     statusCode = HttpStatus.INTERNAL_SERVER_ERROR,
   ): void {
     if (exception instanceof Error) {

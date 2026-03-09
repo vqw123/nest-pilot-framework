@@ -1,18 +1,17 @@
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { ErrorModuleOptions } from './interfaces/error-module-options.interface';
-import { createGlobalFilterProviders, createFilterProviders } from './providers/error.providers';
+import { createDefaultFilterProviders } from './providers/error.providers';
 
 @Module({})
 export class ErrorModule {
-  static forRoot(options: ErrorModuleOptions, isGlobal: boolean = true): DynamicModule {
+  static forRoot(options?: ErrorModuleOptions): DynamicModule {
     const providers: Provider[] = [
-      ...createGlobalFilterProviders(),
-      ...createFilterProviders(options),
-      ...(options.customFilters ?? []),
+      ...createDefaultFilterProviders(),
+      ...(options?.customFilters ?? []),
     ];
 
     return {
-      global: isGlobal,
+      global: true,
       module: ErrorModule,
       providers,
     };

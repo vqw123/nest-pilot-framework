@@ -1,7 +1,7 @@
 import { Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { Response } from 'express';
 import { BaseErrorCode } from '../constants/base-error-code.constant';
-import { BaseHttpException } from '../excetpions/base.exceptions';
+import { BaseHttpException } from '../exceptions/base.exceptions';
 import { BaseExceptionFilter } from './base-exception.filter';
 import { ErrorResponse } from '../responses/error.response';
 

@@ -1,3 +1,3 @@
 export enum BaseErrorCode {
-  INTERNAL_SERVER_ERROR = 0,
+  INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR',
 }

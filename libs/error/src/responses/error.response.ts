@@ -1,4 +1,4 @@
-export class ErrorResponse<T = number> {
+export class ErrorResponse<T = string> {
   constructor(
     public readonly code: T,
     public readonly message: string,
@@ -6,10 +6,8 @@ export class ErrorResponse<T = number> {
 
   getResponse() {
     return {
-      error: {
-        code: this.code,
-        message: this.message,
-      },
+      code: this.code,
+      message: this.message,
     };
   }
 }
