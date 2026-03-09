@@ -17,13 +17,21 @@ ErrorModule.forRoot({
 
 ## 에러 응답 포맷
 
-모든 에러는 아래 포맷으로 통일됩니다.
+예외 종류에 따라 응답 포맷이 다릅니다.
 
+**BaseHttpException** — 우리 포맷
 ```json
-{
-  "code": "USER_NOT_FOUND",
-  "message": "User not found"
-}
+{ "code": "USER_NOT_FOUND", "message": "User not found" }
+```
+
+**일반 HttpException** (ValidationPipe 등 NestJS 내부 예외) — NestJS 기본 포맷
+```json
+{ "statusCode": 400, "message": ["email must be an email"], "error": "Bad Request" }
+```
+
+**그 외** — GlobalExceptionFilter → 500
+```json
+{ "code": "INTERNAL_SERVER_ERROR", "message": "Unexpected internal server error." }
 ```
 
 ## 예외 클래스
@@ -61,7 +69,9 @@ throw new BaseDomainException('EMAIL_EXISTS', 'Email already exists');
 
 ## 필터 동작 순서
 
-1. `HttpExceptionFilter` — `HttpException` 계열 처리 → 에러 코드 포맷으로 응답
+1. `HttpExceptionFilter` — `HttpException` 계열 처리
+   - `BaseHttpException`이면 → `{ code, message }` 포맷
+   - 그 외 `HttpException`이면 → NestJS 기본 포맷 그대로
 2. `GlobalExceptionFilter` — 나머지 모든 예외 처리 → 500 응답
 
 ## BaseErrorCode
