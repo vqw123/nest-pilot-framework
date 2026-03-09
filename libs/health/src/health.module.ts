@@ -3,6 +3,7 @@ import { TerminusModule } from '@nestjs/terminus';
 import { HealthService } from './service/health.service';
 import { HealthController } from './controller/health.v1.controller';
 import { HEALTH_INDICATORS, HealthModuleOptions } from './interfaces/health.interface';
+import { TerminationService } from './termination/termination.service';
 
 @Module({})
 export class HealthModule {
@@ -18,6 +19,7 @@ export class HealthModule {
           useFactory: (...indicators) => indicators,
           inject: options.readiness,
         },
+        TerminationService,
         HealthService,
       ],
     };
