@@ -1,23 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { HealthCheckService, HealthCheck, HealthIndicatorFunction } from '@nestjs/terminus';
-import { DatabaseHealthIndicator } from '../indicator/database.health.indicator';
-import { RedisHealthIndicator } from '../indicator/redis.health.indicator';
+import { Inject, Injectable } from '@nestjs/common';
+import { HealthCheckService } from '@nestjs/terminus';
+import { HEALTH_INDICATORS, HealthIndicatorContract } from '../interfaces/health.interface';
 
 @Injectable()
 export class HealthService {
   constructor(
     private readonly healthCheckService: HealthCheckService,
-    private readonly databaseIndicator: DatabaseHealthIndicator,
-    private readonly redisIndicator: RedisHealthIndicator,
+    @Inject(HEALTH_INDICATORS) private readonly indicators: HealthIndicatorContract[],
   ) {}
 
-  @HealthCheck()
-  async check() {
-    const healthIndicators: HealthIndicatorFunction[] = [
-      () => this.databaseIndicator.isHealthy(),
-      () => this.redisIndicator.isHealthy(),
-    ];
+  liveness() {
+    return { status: 'ok' };
+  }
 
-    return this.healthCheckService.check(healthIndicators);
+  async readiness() {
+    return this.healthCheckService.check(
+      this.indicators.map((indicator) => () => indicator.isHealthy()),
+    );
   }
 }

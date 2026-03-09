@@ -1,13 +1,25 @@
-import { Module } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { TerminusModule } from '@nestjs/terminus';
 import { HealthService } from './service/health.service';
 import { HealthController } from './controller/health.v1.controller';
-import { RedisHealthIndicator } from './indicator/redis.health.indicator';
-import { DatabaseHealthIndicator } from './indicator/database.health.indicator';
+import { HEALTH_INDICATORS, HealthModuleOptions } from './interfaces/health.interface';
 
-@Module({
-  imports: [TerminusModule],
-  controllers: [HealthController],
-  providers: [HealthService, DatabaseHealthIndicator, RedisHealthIndicator],
-})
-export class HealthModule {}
+@Module({})
+export class HealthModule {
+  static forRoot(options: HealthModuleOptions): DynamicModule {
+    return {
+      module: HealthModule,
+      imports: [TerminusModule],
+      controllers: [HealthController],
+      providers: [
+        ...options.readiness,
+        {
+          provide: HEALTH_INDICATORS,
+          useFactory: (...indicators) => indicators,
+          inject: options.readiness,
+        },
+        HealthService,
+      ],
+    };
+  }
+}
