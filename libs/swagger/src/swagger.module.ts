@@ -1,34 +1,28 @@
 import { DynamicModule, Module, Provider } from '@nestjs/common';
-import { SwaggerModuleAsyncOptions, SwaggerMoudleOptions } from './interface/swagger.interface';
+import { SwaggerModuleAsyncOptions, SwaggerModuleOptions } from './interface/swagger.interface';
 import { SwaggerService } from './service/swagger.service';
-import { createAsyncProviders, createOptionsProvider } from './provider/swagger.provider';
+import { createOptionsProvider, createAsyncOptionsProvider } from './provider/swagger.provider';
 
 @Module({})
 export class SwaggerModule {
-  static forRoot(options: SwaggerMoudleOptions, isGlobal = true): DynamicModule {
-    const providers: Provider[] = [createOptionsProvider(options), SwaggerService];
-
+  static forRoot(options: SwaggerModuleOptions): DynamicModule {
     return {
-      global: isGlobal,
+      global: true,
       module: SwaggerModule,
-      providers,
+      providers: [createOptionsProvider(options), SwaggerService],
       exports: [SwaggerService],
     };
   }
 
-  static forRootAsync(options: SwaggerModuleAsyncOptions, isGlobal = true): DynamicModule {
-    if (!options.useFactory) {
-      throw new Error(`Swagger configuration error`);
-    }
-
+  static forRootAsync(options: SwaggerModuleAsyncOptions): DynamicModule {
     const providers: Provider[] = [
-      ...createAsyncProviders(options),
+      createAsyncOptionsProvider(options),
       SwaggerService,
       ...(options.extraProviders ?? []),
     ];
 
     return {
-      global: isGlobal,
+      global: true,
       module: SwaggerModule,
       imports: options.imports,
       providers,

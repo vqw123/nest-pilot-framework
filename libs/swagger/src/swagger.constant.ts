@@ -1,1 +1,1 @@
-const SWAGGER_OPTIONS = Symbol();
+export const SWAGGER_OPTIONS = Symbol('SWAGGER_OPTIONS');

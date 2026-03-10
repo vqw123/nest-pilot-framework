@@ -1,30 +1,16 @@
 import { Provider, ValueProvider } from '@nestjs/common';
-import { SwaggerModuleAsyncOptions, SwaggerMoudleOptions } from '../interface/swagger.interface';
+import { SWAGGER_OPTIONS } from '../swagger.constant';
+import { SwaggerModuleAsyncOptions, SwaggerModuleOptions } from '../interface/swagger.interface';
 
 export const createOptionsProvider = (
-  options: SwaggerMoudleOptions,
-): ValueProvider<SwaggerMoudleOptions> => ({
+  options: SwaggerModuleOptions,
+): ValueProvider<SwaggerModuleOptions> => ({
   provide: SWAGGER_OPTIONS,
   useValue: options,
 });
 
-export const createAsyncOptionsProvider = (options: SwaggerModuleAsyncOptions): Provider => {
-  if (options.useFactory) {
-    return {
-      provide: SWAGGER_OPTIONS,
-      useFactory: options.useFactory,
-      inject: options.inject,
-    };
-  }
-
-  return {
-    provide: SWAGGER_OPTIONS,
-    useValue: {},
-  };
-};
-
-export const createAsyncProviders = (options: SwaggerModuleAsyncOptions): Provider[] => {
-  if (options.useFactory) return [createAsyncOptionsProvider(options)];
-
-  return [];
-};
+export const createAsyncOptionsProvider = (options: SwaggerModuleAsyncOptions): Provider => ({
+  provide: SWAGGER_OPTIONS,
+  useFactory: options.useFactory,
+  inject: options.inject,
+});
