@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ExampleModule } from './example.module';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@libs/config';
+import { SwaggerService } from '@libs/swagger';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(ExampleModule);
@@ -12,9 +13,13 @@ async function bootstrap(): Promise<void> {
   const port = configService.get<number>('server.port');
 
   // SIGTERM 수신 시 HealthModule의 TerminationService.onModuleDestroy()가 호출되어
-  // readiness 엔드포인트가 503을 반환하고 로드밸런서에서 Pod이 제외됩니다.
-  // K8s deployment의 terminationGracePeriodSeconds 동안 in-flight 요청을 처리 후 종료됩니다.
+  // readiness 엔드포인트가 503을 반환하고 로드밸런서에서 Pod이 제외된다.
+  // K8s deployment의 terminationGracePeriodSeconds 동안 in-flight 요청을 처리 후 종료된다.
   app.enableShutdownHooks();
+
+  // SwaggerService.setup()은 INestApplication이 필요하므로 main.ts에서 호출한다.
+  // (컨트롤러 메타데이터 스캔이 앱 인스턴스에 종속됨)
+  app.get(SwaggerService).setup(app);
 
   const logger = new Logger('Bootstrap');
   await app.listen(port);

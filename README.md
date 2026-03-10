@@ -56,24 +56,42 @@ nest build auth
 
 ## 테스트
 
+### Unit Test
+
 ```bash
-# 전체 테스트
+# 전체 실행
 npm test
 
-# 특정 라이브러리 테스트
-npx jest libs/health
-npx jest libs/redis
-npx jest libs/database
-npx jest libs/error
+# 특정 앱 또는 라이브러리만 실행
+npx jest apps/example
+npx jest libs/common
 npx jest libs/config
 npx jest libs/logger
-
-# 커버리지 포함
-npm run test:cov
+npx jest libs/error
+npx jest libs/database
+npx jest libs/redis
+npx jest libs/health
+npx jest libs/http
+npx jest libs/swagger
 
 # watch 모드
 npm run test:watch
+
+# 커버리지 포함
+npm run test:cov
 ```
+
+### E2E Test
+
+E2E 테스트는 앱별 `jest-e2e.json` 설정을 사용합니다.
+
+```bash
+# example 앱 e2e
+npx jest --config ./apps/example/test/jest-e2e.json
+```
+
+> E2E 테스트는 실제 DB/Redis 없이 실행됩니다.
+> Repository와 RedisService를 mock으로 대체하고 supertest로 HTTP 파이프라인 전체를 검증합니다.
 
 ## 새 앱 추가
 
