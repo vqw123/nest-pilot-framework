@@ -1,0 +1,58 @@
+name: nest-pilot
+
+services:
+  mysql-master:
+    container_name: mysql-master
+    build:
+      context: ./mysql
+      dockerfile: master/Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: '1234'  # 운영 환경에서는 반드시 변경하세요
+    volumes:
+      - ./mysql/init:/docker-entrypoint-initdb.d
+    restart: always
+    ports:
+      - '3306:3306'
+    networks:
+      - nest-pilot-network
+
+  mysql-slave:
+    container_name: mysql-slave
+    build:
+      context: ./mysql
+      dockerfile: slave/Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: '1234'  # 운영 환경에서는 반드시 변경하세요
+    restart: always
+    ports:
+      - '3307:3306'
+    networks:
+      - nest-pilot-network
+
+  redis-master:
+    container_name: redis-master
+    build:
+      context: ./redis
+      dockerfile: master/Dockerfile
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server /usr/local/etc/redis.conf
+    networks:
+      - nest-pilot-network
+
+  redis-slave:
+    container_name: redis-slave
+    build:
+      context: ./redis
+      dockerfile: slave/Dockerfile
+    restart: always
+    ports:
+      - '6380:6379'
+    command: redis-server /usr/local/etc/redis.conf
+    networks:
+      - nest-pilot-network
+
+networks:
+  nest-pilot-network:
+    driver: bridge
