@@ -1,7 +1,10 @@
 # nest-pilot-framework
 
-기존 NestJS 서비스 운영 경험을 기반으로 공통 기능을 라이브러리화한 NestJS Monorepo 프레임워크입니다.
-새 서비스는 `apps/`에 추가하고 `libs/`의 공용 라이브러리를 바로 사용할 수 있습니다.
+실무 NestJS 서비스 개발 과정에서 반복적으로 필요했던 공통 기능과, 운영하면서 아쉬웠던 구조를 보완하기 위해 재구성한 Monorepo 기반 스타터 프레임워크입니다.
+
+실서비스 코드를 그대로 공개한 저장소가 아니라, 새 서비스를 빠르게 시작할 수 있는 공통 모듈 구조, 코드 스타일, 테스트 방식, 운영 친화적인 설계 포인트를 보여주기 위한 포트폴리오입니다.
+
+새 서비스는 `apps/`에 추가하고, `libs/`의 공통 라이브러리를 재사용할 수 있도록 구성했습니다.
 
 ## 프로젝트 구조
 
@@ -160,15 +163,15 @@ apps/{appName}/config/
 
 ## 라이브러리 목록
 
-| 라이브러리 | 설명 | README |
-|---|---|---|
-| `@libs/common` | RequestContext, RequestUtil | [바로가기](libs/common/README.md) |
-| `@libs/config` | YAML 기반 설정 관리 | [바로가기](libs/config/README.md) |
-| `@libs/logger` | Winston 로깅, HTTP 인터셉터, Correlation ID | [바로가기](libs/logger/README.md) |
-| `@libs/error` | 전역 예외 처리, 표준 에러 포맷 | [바로가기](libs/error/README.md) |
-| `@libs/database` | TypeORM 연결, Repository 패턴 | [바로가기](libs/database/README.md) |
-| `@libs/redis` | ioredis 연결 관리, 멀티 네임스페이스 | [바로가기](libs/redis/README.md) |
-| `@libs/health` | liveness/readiness, Graceful Shutdown | [바로가기](libs/health/README.md) |
-| `@libs/http` | ValidationPipe, Helmet/CORS | [바로가기](libs/http/README.md) |
-| `@libs/swagger` | Swagger 문서화 | [바로가기](libs/swagger/README.md) |
-| `@libs/auth` | Bearer JWT (JWKS), Basic Auth, IP 필터 Guard | [바로가기](libs/auth/README.md) |
+| 라이브러리       | 설명                                         | README                              |
+| ---------------- | -------------------------------------------- | ----------------------------------- |
+| `@libs/common`   | RequestContext, RequestUtil                  | [바로가기](libs/common/README.md)   |
+| `@libs/config`   | YAML 기반 설정 관리                          | [바로가기](libs/config/README.md)   |
+| `@libs/logger`   | Winston 로깅, HTTP 인터셉터, Correlation ID  | [바로가기](libs/logger/README.md)   |
+| `@libs/error`    | 전역 예외 처리, 표준 에러 포맷               | [바로가기](libs/error/README.md)    |
+| `@libs/database` | TypeORM 연결, Repository 패턴                | [바로가기](libs/database/README.md) |
+| `@libs/redis`    | ioredis 연결 관리, 멀티 네임스페이스         | [바로가기](libs/redis/README.md)    |
+| `@libs/health`   | liveness/readiness, Graceful Shutdown        | [바로가기](libs/health/README.md)   |
+| `@libs/http`     | ValidationPipe, Helmet/CORS                  | [바로가기](libs/http/README.md)     |
+| `@libs/swagger`  | Swagger 문서화                               | [바로가기](libs/swagger/README.md)  |
+| `@libs/auth`     | Bearer JWT (JWKS), Basic Auth, IP 필터 Guard | [바로가기](libs/auth/README.md)     |
