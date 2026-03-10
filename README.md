@@ -18,6 +18,7 @@ nest-pilot-framework/
     ├── database/      # TypeORM 연결 관리
     ├── redis/         # ioredis 연결 관리
     ├── health/        # liveness/readiness 헬스체크
+    ├── http/          # ValidationPipe, Helmet/CORS
     └── swagger/       # Swagger 문서화
 ```
 
@@ -138,4 +139,5 @@ apps/{appName}/config/
 | `@libs/database` | TypeORM 연결, Repository 패턴 | [바로가기](libs/database/README.md) |
 | `@libs/redis` | ioredis 연결 관리, 멀티 네임스페이스 | [바로가기](libs/redis/README.md) |
 | `@libs/health` | liveness/readiness, Graceful Shutdown | [바로가기](libs/health/README.md) |
+| `@libs/http` | ValidationPipe, Helmet/CORS | [바로가기](libs/http/README.md) |
 | `@libs/swagger` | Swagger 문서화 | [바로가기](libs/swagger/README.md) |

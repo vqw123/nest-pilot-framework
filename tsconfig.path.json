@@ -16,7 +16,9 @@
       "@libs/error": ["libs/error/src"],
       "@libs/error/*": ["libs/error/src/*"],
       "@libs/swagger": ["libs/swagger/src"],
-      "@libs/swagger/*": ["libs/swagger/src/*"]
+      "@libs/swagger/*": ["libs/swagger/src/*"],
+      "@libs/http": ["libs/http/src"],
+      "@libs/http/*": ["libs/http/src/*"]
     }
   }
 }

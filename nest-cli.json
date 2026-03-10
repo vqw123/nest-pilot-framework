@@ -95,6 +95,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/swagger/tsconfig.lib.json"
       }
+    },
+    "http": {
+      "type": "library",
+      "root": "libs/http",
+      "entryFile": "index",
+      "sourceRoot": "libs/http/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/http/tsconfig.lib.json"
+      }
     }
   }
 }
