@@ -18,7 +18,9 @@
       "@libs/swagger": ["libs/swagger/src"],
       "@libs/swagger/*": ["libs/swagger/src/*"],
       "@libs/http": ["libs/http/src"],
-      "@libs/http/*": ["libs/http/src/*"]
+      "@libs/http/*": ["libs/http/src/*"],
+      "@libs/auth": ["libs/auth/src"],
+      "@libs/auth/*": ["libs/auth/src/*"]
     }
   }
 }

@@ -19,7 +19,8 @@ nest-pilot-framework/
     ├── redis/         # ioredis 연결 관리
     ├── health/        # liveness/readiness 헬스체크
     ├── http/          # ValidationPipe, Helmet/CORS
-    └── swagger/       # Swagger 문서화
+    ├── swagger/       # Swagger 문서화
+    └── auth/          # Bearer JWT, Basic Auth, IP 필터 Guard
 ```
 
 각 라이브러리의 자세한 사용법은 해당 디렉토리의 `README.md`를 참고하세요.
@@ -64,6 +65,7 @@ npm test
 
 # 특정 앱 또는 라이브러리만 실행
 npx jest apps/example
+npx jest apps/auth
 npx jest libs/common
 npx jest libs/config
 npx jest libs/logger
@@ -73,6 +75,7 @@ npx jest libs/redis
 npx jest libs/health
 npx jest libs/http
 npx jest libs/swagger
+npx jest libs/auth
 
 # watch 모드
 npm run test:watch
@@ -111,6 +114,15 @@ nest generate app {appName}
     RedisModule.forRootAsync({ ... }),
     HealthModule.forRoot({
       readiness: [DatabaseHealthIndicator, RedisHealthIndicator],
+    }),
+    // JWT 인증이 필요한 경우 (auth 서버 JWKS endpoint 또는 로컬 공개키)
+    BearerModule.forRootAsync({
+      useFactory: (config: ConfigService) => ({
+        jwksUri: config.get('auth.jwksUri'), // 운영
+        // publicKey: config.get('jwt.publicKey'), // 로컬
+        issuer: config.get('auth.issuer'),
+      }),
+      inject: [ConfigService],
     }),
   ],
 })
@@ -159,3 +171,4 @@ apps/{appName}/config/
 | `@libs/health` | liveness/readiness, Graceful Shutdown | [바로가기](libs/health/README.md) |
 | `@libs/http` | ValidationPipe, Helmet/CORS | [바로가기](libs/http/README.md) |
 | `@libs/swagger` | Swagger 문서화 | [바로가기](libs/swagger/README.md) |
+| `@libs/auth` | Bearer JWT (JWKS), Basic Auth, IP 필터 Guard | [바로가기](libs/auth/README.md) |
