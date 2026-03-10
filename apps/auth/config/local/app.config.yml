@@ -1,0 +1,6 @@
+app:
+  name: "auth-server"
+  version: "1.0.0"
+
+server:
+  port: 3001
