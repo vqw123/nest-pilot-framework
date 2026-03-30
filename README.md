@@ -92,6 +92,9 @@ npm run test:cov
 E2E 테스트는 앱별 `jest-e2e.json` 설정을 사용합니다.
 
 ```bash
+# auth 앱 e2e
+npx jest --config ./apps/auth/test/jest-e2e.json
+
 # example 앱 e2e
 npx jest --config ./apps/example/test/jest-e2e.json
 ```
