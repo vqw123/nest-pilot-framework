@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from '@libs/database';
-import { TokenModule } from '../../token/v1/token.module';
+import { SessionModule } from '../../session/v1/session.module';
 import { EmailController } from './email.controller';
 import { EmailService } from './email.service';
 import { EmailIdentityEntity } from '../../entity/email-identity.entity';
@@ -9,7 +9,7 @@ import { ProjectEntity } from '../../entity/project.entity';
 
 @Module({
   imports: [
-    TokenModule,
+    SessionModule,
     DatabaseModule.forFeature([EmailIdentityEntity, AccountEntity, ProjectEntity]),
   ],
   controllers: [EmailController],

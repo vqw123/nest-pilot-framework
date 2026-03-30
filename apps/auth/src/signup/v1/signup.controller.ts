@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiCreatedResponse } from '@nestjs/swagger';
 import { ProjectGuard } from '../../common/guard/project.guard';
-import { TokenService } from '../../token/v1/token.service';
+import { SessionService } from '../../session/v1/session.service';
 import { GoogleSigninService } from '../../signin/v1/service/google-signin.service';
 import { EmailSignupService } from './service/email-signup.service';
 import { GoogleSigninDto } from '../../signin/v1/dto/google-signin.dto';
@@ -13,7 +13,7 @@ import { EmailSignupDto } from './dto/email-signup.dto';
 @UseGuards(ProjectGuard)
 export class SignupController {
   constructor(
-    private readonly tokenService: TokenService,
+    private readonly sessionService: SessionService,
     private readonly googleSigninService: GoogleSigninService,
     private readonly emailSignupService: EmailSignupService,
   ) {}
@@ -27,7 +27,7 @@ export class SignupController {
     @Body() dto: GoogleSigninDto,
   ): Promise<SigninResponseDto> {
     const { uuid } = await this.googleSigninService.signUp(projectId, dto.idToken);
-    return { accessToken: this.tokenService.sign(uuid, projectId) };
+    return this.sessionService.createSession(uuid, projectId);
   }
 
   @Post('email')

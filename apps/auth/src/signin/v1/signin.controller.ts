@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Param, UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import { ProjectGuard } from '../../common/guard/project.guard';
-import { TokenService } from '../../token/v1/token.service';
+import { SessionService } from '../../session/v1/session.service';
 import { GoogleSigninService } from './service/google-signin.service';
 import { AppleSigninService } from './service/apple-signin.service';
 import { EmailSigninService } from './service/email-signin.service';
@@ -14,7 +14,7 @@ import { SigninResponseDto } from './dto/signin-response.dto';
 @UseGuards(ProjectGuard)
 export class SigninController {
   constructor(
-    private readonly tokenService: TokenService,
+    private readonly sessionService: SessionService,
     private readonly googleSigninService: GoogleSigninService,
     private readonly appleSigninService: AppleSigninService,
     private readonly emailSigninService: EmailSigninService,
@@ -29,7 +29,7 @@ export class SigninController {
     @Body() dto: GoogleSigninDto,
   ): Promise<SigninResponseDto> {
     const { uuid } = await this.googleSigninService.signIn(projectId, dto.idToken);
-    return { accessToken: this.tokenService.sign(uuid, projectId) };
+    return this.sessionService.createSession(uuid, projectId);
   }
 
   @Post('apple')
@@ -41,7 +41,7 @@ export class SigninController {
     @Body() dto: GoogleSigninDto,
   ): Promise<SigninResponseDto> {
     const { uuid } = await this.appleSigninService.signIn(projectId, dto.idToken);
-    return { accessToken: this.tokenService.sign(uuid, projectId) };
+    return this.sessionService.createSession(uuid, projectId);
   }
 
   @Post('email')
@@ -53,6 +53,6 @@ export class SigninController {
     @Body() dto: EmailSigninDto,
   ): Promise<SigninResponseDto> {
     const { uuid } = await this.emailSigninService.signIn(projectId, dto.email, dto.password);
-    return { accessToken: this.tokenService.sign(uuid, projectId) };
+    return this.sessionService.createSession(uuid, projectId);
   }
 }

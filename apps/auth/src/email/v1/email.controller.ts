@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import { ProjectGuard } from '../../common/guard/project.guard';
-import { TokenService } from '../../token/v1/token.service';
+import { SessionService } from '../../session/v1/session.service';
 import { EmailService } from './email.service';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ResendEmailDto } from './dto/resend-email.dto';
@@ -13,19 +13,19 @@ import { SigninResponseDto } from '../../signin/v1/dto/signin-response.dto';
 export class EmailController {
   constructor(
     private readonly emailService: EmailService,
-    private readonly tokenService: TokenService,
+    private readonly sessionService: SessionService,
   ) {}
 
   @Post('verify')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: '이메일 인증 코드 확인 → JWT 발급' })
+  @ApiOperation({ summary: '이메일 인증 코드 확인 → JWT + Refresh Token 발급' })
   @ApiOkResponse({ type: SigninResponseDto })
   async verify(
     @Param('projectId') projectId: string,
     @Body() dto: VerifyEmailDto,
   ): Promise<SigninResponseDto> {
     const uuid = await this.emailService.verify(dto.email, dto.code);
-    return { accessToken: this.tokenService.sign(uuid, projectId) };
+    return this.sessionService.createSession(uuid, projectId);
   }
 
   @Post('resend')

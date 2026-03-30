@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from '@libs/database';
-import { TokenModule } from '../../token/v1/token.module';
+import { SessionModule } from '../../session/v1/session.module';
 import { SigninController } from './signin.controller';
 import { AccountService } from './service/account.service';
 import { GoogleSigninService } from './service/google-signin.service';
@@ -16,7 +16,7 @@ import { ProjectEntity } from '../../entity/project.entity';
 
 @Module({
   imports: [
-    TokenModule,
+    SessionModule,
     DatabaseModule.forFeature([
       AccountEntity,
       IdentityEntity,

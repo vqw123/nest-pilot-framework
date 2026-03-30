@@ -1,17 +1,20 @@
-import { Controller, Delete, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
+import { Controller, Delete, HttpCode, HttpStatus, Post, UseGuards, Body } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiNoContentResponse } from '@nestjs/swagger';
-import { ProjectGuard } from '../../common/guard/project.guard';
 import { BearerGuard, CurrentUser, JwtPayload } from '@libs/auth';
 import { LinkService } from './link.service';
 import { GoogleSigninService } from '../../signin/v1/service/google-signin.service';
 import { LinkSocialDto } from './dto/link.dto';
-import { Body } from '@nestjs/common';
 import { Provider } from '../../entity/provider.enum';
 
-@ApiTags('link')
+/**
+ * 계정 연동/해제 API — 프로젝트와 무관한 계정 전역(account-global) 작업이다.
+ * projectId 경로 파라미터 없이 Bearer JWT로 계정을 식별한다.
+ * Google OAuth 설정 조회에는 JWT audience(aud)에 담긴 projectId를 사용한다.
+ */
+@ApiTags('account/link')
 @ApiBearerAuth()
-@Controller(':projectId/link')
-@UseGuards(ProjectGuard, BearerGuard)
+@Controller('account/link')
+@UseGuards(BearerGuard)
 export class LinkController {
   constructor(
     private readonly linkService: LinkService,
@@ -20,20 +23,19 @@ export class LinkController {
 
   @Post('google')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Google 계정 연동' })
+  @ApiOperation({ summary: 'Google 계정 연동 (account-global)' })
   @ApiNoContentResponse()
   async linkGoogle(
-    @Param('projectId') projectId: string,
     @Body() dto: LinkSocialDto,
     @CurrentUser() user: JwtPayload,
   ): Promise<void> {
-    const profile = await this.googleSigninService.verifyIdToken(projectId, dto.idToken);
+    const profile = await this.googleSigninService.verifyIdToken(user.aud, dto.idToken);
     await this.linkService.linkSocial(user.sub, Provider.GOOGLE, profile.providerUserId);
   }
 
   @Delete('google')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Google 계정 연동 해제' })
+  @ApiOperation({ summary: 'Google 계정 연동 해제 (account-global)' })
   @ApiNoContentResponse()
   async unlinkGoogle(@CurrentUser() user: JwtPayload): Promise<void> {
     await this.linkService.unlinkSocial(user.sub, Provider.GOOGLE);
