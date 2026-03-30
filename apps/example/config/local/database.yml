@@ -3,7 +3,7 @@ database:
   host: 'localhost'
   port: 3306
   username: 'root'
-  password: 'SuperTree!@#$7890'
+  password: '1234'
   timezone: 'Z' # UTC
   autoLoadEntities: true
   maxQueryExecutionTime: 1000 # log for long query 
