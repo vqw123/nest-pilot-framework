@@ -1,149 +1,30 @@
 # CLAUDE.md
 
-## 프로젝트 정체성
+## Project Identity
 
-이 저장소는 새로운 백엔드 서비스를 빠르게 시작하기 위한 NestJS monorepo 스타터 프레임워크입니다.
+This repository is a NestJS monorepo starter framework.
 
-구조는 다음을 기본으로 합니다.
+- `apps/*`: independently runnable service apps
+- `libs/*`: reusable shared modules
 
-- `apps/*`: 독립적으로 실행 가능한 서비스 앱
-- `libs/*`: 여러 앱에서 재사용하는 공통 모듈
+Always inspect the current repository structure before proposing changes.
 
-새로운 구조를 제안하기 전에 항상 현재 저장소의 구조를 먼저 읽고 따릅니다.
+## Core Rules
 
-## 핵심 철학
+- Respect NestJS conventions: modules, providers, dependency injection, and clear boundaries.
+- Keep controllers thin.
+- Put business logic in services or use-case layers.
+- Keep app-specific logic inside `apps/*`.
+- Put only true shared concerns in `libs/*`.
+- Do not hardcode secrets or environment-specific values.
+- Preserve readiness, liveness, and graceful shutdown behavior.
+- Use `.docker` for local infrastructure dependencies.
+- When behavior changes, add or update tests.
 
-항상 아래 원칙에 맞춰 설계하고 구현합니다.
+## Avoid
 
-1. NestJS 철학 존중
-
-- 모듈과 provider를 명시적으로 유지
-- Controller는 얇게 유지
-- 비즈니스 로직은 Service 또는 Use Case 계층에 배치
-- DI와 프레임워크 관례를 우선 사용
-
-2. MSA 지향 구조 존중
-
-- `apps/*`의 각 앱은 독립적으로 이해 가능해야 함
-- 앱 전용 로직은 해당 앱 안에 유지
-- shared lib는 진짜 공통 관심사만 포함
-- 공용 라이브러리를 잡다한 저장소처럼 쓰지 않음
-
-3. SOLID 원칙 준수
-
-- 책임을 좁고 분명하게 유지
-- 의미 있는 추상화를 우선
-- 인프라 세부사항보다 주입 가능한 경계에 의존
-
-4. TDD 친화적 구조 지향
-
-- 가능한 경우 격리된 테스트가 가능한 구조
-- 비즈니스 로직과 인프라/전송 계층 분리
-- 동작 변경 시 테스트도 함께 수정 또는 추가
-
-5. Kubernetes 기반 런타임 고려
-
-- readiness/liveness 의미 유지
-- graceful shutdown 동작 유지
-- 로컬 전용 가정 최소화
-- 설정은 외부화
-
-6. 로컬 개발 경험 중시
-
-- 개발자는 앱 하나를 직접 실행할 수 있어야 함
-- 인프라 의존성은 Docker / Docker Compose로 실행 가능해야 함
-- 새 의존성을 추가하면 로컬 실행 방법도 같이 안내
-
-## 저장소 구조 원칙
-
-### apps/\*
-
-- 각 앱은 하나의 서비스 경계
-- 서비스 전용 비즈니스 로직은 여기 배치
-- 앱 전용 config도 여기 배치
-
-### libs/\*
-
-- 공통 기술 관심사만 배치
-- config, logger, error, database, redis, health, auth, swagger 등
-- 앱 전용 도메인 로직은 성급히 여기로 옮기지 않음
-
-## 아키텍처 규칙
-
-### Controller
-
-- 전송 계층 역할만 담당
-- 입력 검증
-- 서비스 호출
-- 응답 형태 조정
-- 복잡한 비즈니스 로직 금지
-
-### Service / Use Case
-
-- 비즈니스 규칙 담당
-- 의존성 호출 순서와 흐름 제어
-- 책임이 커지면 분리
-
-### Persistence
-
-- 영속성 처리 분리
-- ORM 세부 구현이 비즈니스 로직에 과하게 새지 않도록 주의
-
-### Config
-
-- 환경별 명시적 설정 사용
-- 비밀값/엔드포인트 하드코딩 금지
-- 예측 가능한 설정 구조 유지
-
-### Error / Logging / Health
-
-- 표준화된 에러 흐름 유지
-- 운영에 도움이 되는 로그 유지
-- readiness/liveness 의미 유지
-- graceful shutdown 유지
-
-## 런타임 기대사항
-
-코드는 아래 환경에서 실행될 수 있다고 가정합니다.
-
-- 로컬 직접 실행
-- Docker 기반 로컬 의존성 실행
-- 컨테이너 환경
-- Kubernetes 환경
-
-항상 아래를 고려합니다.
-
-- config 영향
-- 로컬 실행 영향
-- 부팅 순서와 의존성 준비 상태
-- graceful shutdown
-- 관측 가능성
-
-## 작업 절차
-
-구현 전에:
-
-1. 대상 앱의 `apps/*` 구조 확인
-2. 관련 `libs/*` 구조 확인
-3. 기존 관례 재사용 가능 여부 확인
-4. 요구사항에 맞는 최소 구조 선택
-5. config 영향 파악
-6. 로컬 런타임 영향 파악
-7. 테스트 영향 파악
-
-구현 결과를 설명할 때는 아래를 포함합니다.
-
-- 무엇이 바뀌었는지
-- 왜 이 구조가 NestJS/MSA/SOLID/TDD 방향에 맞는지
-- 로컬에서 어떻게 실행하는지
-- Compose 변경이 필요한지
-- 어떤 테스트가 추가되거나 필요해졌는지
-
-## 피해야 할 것
-
-- fat controller
-- app 전용 로직이 shared lib로 들어가는 구조
-- 환경값 하드코딩
-- 취약한 부팅 흐름
-- 비즈니스 로직이 ORM/전송 계층에 강하게 묶이는 구조
-- 로컬 개발을 더 어렵게 만드는 변경
+- fat controllers
+- app-specific logic in shared libs
+- fragile startup assumptions
+- tightly coupled business logic and infrastructure
+- changes that make local development harder

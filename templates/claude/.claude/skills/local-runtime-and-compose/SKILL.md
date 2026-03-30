@@ -1,81 +1,20 @@
 ---
 name: local-runtime-and-compose
-description: 로컬 백엔드 실행, 인프라 의존성 구성, Docker Compose 작성, 온보딩 문서 작성 시 사용하는 skill이다.
+description: Document local backend execution, infrastructure setup, Docker Compose usage, and onboarding flow.
 ---
 
-# 목적
+# Procedure
 
-이 skill은 아래 작업에 사용합니다.
+1. Identify the target app and required dependencies.
+2. Run the app directly on the host where practical.
+3. Use Docker / Docker Compose for infrastructure dependencies.
+4. Document host, port, credentials, and related config files.
+5. Provide exact local startup commands.
+6. Keep the setup simple and reproducible.
 
-- 로컬 앱 실행 방법 정리
-- 인프라 의존성 세팅
-- Docker Compose 작성
-- 온보딩 문서 작성
-- 로컬 트러블슈팅 가이드 작성
+# Avoid
 
-# 절차
-
-1. 런타임 요구사항 확인
-
-- 대상 앱 확인
-- 필요한 인프라 의존성 확인
-- 필요한 config 파일과 연결 정보 확인
-
-2. 앱 실행과 인프라 실행 분리
-
-- 앱은 가능하면 호스트에서 직접 실행
-- 인프라는 Docker / Docker Compose 사용
-- 전체를 Docker화해야 하는 요구가 없다면 앱까지 굳이 컨테이너화하지 않음
-
-3. 실행 경로를 명확히 제시
-   경로 A: 앱 직접 실행
-
-- 의존성 설치
-- 필요한 인프라 실행
-- 앱 직접 실행
-- 정확한 명령어 포함
-
-경로 B: Compose 기반 인프라 실행
-
-- 명확한 compose 파일 또는 예시 제공
-- 서비스명 명시
-- 필요한 포트만 개방
-- 과도하게 복잡한 구성을 피함
-
-4. 설정 매핑 문서화
-   각 의존성에 대해 아래를 설명합니다.
-
-- 서비스명
-- host
-- port
-- 필요 시 계정 정보
-- 관련 config 파일 또는 key
-
-5. 개발자 편의성 우선
-
-- 수동 설치 최소화
-- 머신별 가정 최소화
-- 짧고 재현 가능한 시작 절차 제공
-
-6. 트레이드오프 간단 설명
-
-- 언제 앱 직접 실행이 좋은지
-- 언제 compose가 재현성에 유리한지
-- 언제 전체 컨테이너화가 불필요한지
-
-# 결과물 예시
-
-상황에 따라 아래를 제공합니다.
-
-- 로컬 실행 단계
-- compose 파일
-- config 예시
-- README 섹션
-- 트러블슈팅 노트
-
-# 피해야 할 것
-
-- 문서화되지 않은 포트
-- 숨겨진 계정 정보
-- 간단한 테스트에도 모든 서비스 실행 강제
-- 불필요한 복잡성
+- undocumented ports
+- hidden credentials
+- unnecessary complexity
+- forcing all services to run for simple testing
