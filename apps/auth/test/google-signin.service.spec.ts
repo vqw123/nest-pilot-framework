@@ -1,6 +1,7 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { GoogleSigninService } from '../src/signin/v1/service/google-signin.service';
 import { OauthConfigEntity } from '../src/entity/oauth-config.entity';
+import { Provider } from '../src/entity/provider.enum';
 import { Repository } from '@libs/database';
 
 // ---- mock google-auth-library ----
@@ -17,7 +18,7 @@ const ID_TOKEN = 'test-id-token';
 
 const mockOauthConfig: Partial<OauthConfigEntity> = {
   projectId: PROJECT_ID,
-  provider: 'google',
+  provider: Provider.GOOGLE,
   clientData: JSON.stringify({ client_id: 'test-client-id' }),
   redirectUri: 'https://example.com/callback',
 };
@@ -72,64 +73,59 @@ describe('GoogleSigninService', () => {
       );
     });
 
-    it('returns socialId and properties on valid token', async () => {
+    it('returns SocialProfile on valid token', async () => {
       oauthConfigRepository.findOne.mockResolvedValue(mockOauthConfig as OauthConfigEntity);
       mockVerifyIdToken.mockResolvedValue(mockTicket);
 
       const result = await service.verifyIdToken(PROJECT_ID, ID_TOKEN);
 
       expect(result).toEqual({
-        socialId: 'google-user-123',
-        properties: {
-          email: 'user@example.com',
-          name: 'Test User',
-          picture: 'https://example.com/pic.jpg',
-        },
+        provider: Provider.GOOGLE,
+        providerUserId: 'google-user-123',
+        email: 'user@example.com',
+        name: 'Test User',
+        profilePictureUrl: 'https://example.com/pic.jpg',
       });
     });
   });
 
   // ------------------------------------------------------------------ //
   describe('signIn', () => {
-    it('delegates to verifyIdToken then accountService.signInWithSocial, returns { uid }', async () => {
+    it('delegates to verifyIdToken then accountService.signInWithSocial, returns { uuid }', async () => {
       oauthConfigRepository.findOne.mockResolvedValue(mockOauthConfig as OauthConfigEntity);
       mockVerifyIdToken.mockResolvedValue(mockTicket);
-      accountService.signInWithSocial.mockResolvedValue({ uid: 42 });
+      accountService.signInWithSocial.mockResolvedValue({ uuid: 'uuid-abc' });
 
       const result = await service.signIn(PROJECT_ID, ID_TOKEN);
 
-      expect(result).toEqual({ uid: 42 });
-      expect(accountService.signInWithSocial).toHaveBeenCalledWith(PROJECT_ID, {
-        provider: 'google',
-        socialId: 'google-user-123',
-        properties: {
-          email: 'user@example.com',
-          name: 'Test User',
-          picture: 'https://example.com/pic.jpg',
-        },
-      });
+      expect(result).toEqual({ uuid: 'uuid-abc' });
+      expect(accountService.signInWithSocial).toHaveBeenCalledWith(
+        PROJECT_ID,
+        expect.objectContaining({
+          provider: Provider.GOOGLE,
+          providerUserId: 'google-user-123',
+        }),
+      );
     });
   });
 
   // ------------------------------------------------------------------ //
   describe('signUp', () => {
-    it('delegates to verifyIdToken then accountService.signUpWithSocial, returns { uid }', async () => {
+    it('delegates to verifyIdToken then accountService.signUpWithSocial, returns { uuid }', async () => {
       oauthConfigRepository.findOne.mockResolvedValue(mockOauthConfig as OauthConfigEntity);
       mockVerifyIdToken.mockResolvedValue(mockTicket);
-      accountService.signUpWithSocial.mockResolvedValue({ uid: 88 });
+      accountService.signUpWithSocial.mockResolvedValue({ uuid: 'uuid-new' });
 
       const result = await service.signUp(PROJECT_ID, ID_TOKEN);
 
-      expect(result).toEqual({ uid: 88 });
-      expect(accountService.signUpWithSocial).toHaveBeenCalledWith(PROJECT_ID, {
-        provider: 'google',
-        socialId: 'google-user-123',
-        properties: {
-          email: 'user@example.com',
-          name: 'Test User',
-          picture: 'https://example.com/pic.jpg',
-        },
-      });
+      expect(result).toEqual({ uuid: 'uuid-new' });
+      expect(accountService.signUpWithSocial).toHaveBeenCalledWith(
+        PROJECT_ID,
+        expect.objectContaining({
+          provider: Provider.GOOGLE,
+          providerUserId: 'google-user-123',
+        }),
+      );
     });
   });
 });

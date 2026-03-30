@@ -2,15 +2,11 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { OAuth2Client } from 'google-auth-library';
 import { InjectRepository, Repository } from '@libs/database';
 import { OauthConfigEntity } from '../../../entity/oauth-config.entity';
-import { AccountService } from './account.service';
+import { AccountService, SocialProfile } from './account.service';
+import { Provider } from '../../../entity/provider.enum';
 
 interface GoogleClientData {
   client_id: string;
-}
-
-export interface GoogleProfile {
-  socialId: string;
-  properties: Record<string, any>;
 }
 
 @Injectable()
@@ -22,12 +18,12 @@ export class GoogleSigninService {
   ) {}
 
   /**
-   * Google ID Token을 검증해 사용자 프로필을 반환한다.
+   * Google ID Token을 검증해 SocialProfile을 반환한다.
    * Authorization Code 교환 없이 클라이언트가 전달한 ID Token을 직접 검증한다.
    */
-  async verifyIdToken(projectId: string, idToken: string): Promise<GoogleProfile> {
+  async verifyIdToken(projectId: string, idToken: string): Promise<SocialProfile> {
     const config = await this.oauthConfigRepository.findOne({
-      where: { projectId, provider: 'google' },
+      where: { projectId, provider: Provider.GOOGLE },
     });
 
     if (!config) {
@@ -37,37 +33,31 @@ export class GoogleSigninService {
     const { client_id } = JSON.parse(config.clientData) as GoogleClientData;
     const client = new OAuth2Client(client_id);
 
-    const ticket = await client.verifyIdToken({
-      idToken,
-      audience: client_id,
-    }).catch(() => {
-      throw new UnauthorizedException('Failed to verify Google ID token');
-    });
+    const ticket = await client
+      .verifyIdToken({ idToken, audience: client_id })
+      .catch(() => {
+        throw new UnauthorizedException('Failed to verify Google ID token');
+      });
 
     const payload = ticket.getPayload();
     return {
-      socialId: payload.sub,
-      properties: { email: payload.email, name: payload.name, picture: payload.picture },
+      provider: Provider.GOOGLE,
+      providerUserId: payload.sub,
+      email: payload.email ?? null,
+      name: payload.name ?? null,
+      profilePictureUrl: payload.picture ?? null,
     };
   }
 
   /** Google ID Token으로 로그인. 미가입 유저면 NotFoundException. */
-  async signIn(projectId: string, idToken: string): Promise<{ uid: number }> {
+  async signIn(projectId: string, idToken: string): Promise<{ uuid: string }> {
     const profile = await this.verifyIdToken(projectId, idToken);
-    return this.accountService.signInWithSocial(projectId, {
-      provider: 'google',
-      socialId: profile.socialId,
-      properties: profile.properties,
-    });
+    return this.accountService.signInWithSocial(projectId, profile);
   }
 
   /** Google ID Token으로 회원가입. 이미 가입된 유저면 ConflictException. */
-  async signUp(projectId: string, idToken: string): Promise<{ uid: number }> {
+  async signUp(projectId: string, idToken: string): Promise<{ uuid: string }> {
     const profile = await this.verifyIdToken(projectId, idToken);
-    return this.accountService.signUpWithSocial(projectId, {
-      provider: 'google',
-      socialId: profile.socialId,
-      properties: profile.properties,
-    });
+    return this.accountService.signUpWithSocial(projectId, profile);
   }
 }

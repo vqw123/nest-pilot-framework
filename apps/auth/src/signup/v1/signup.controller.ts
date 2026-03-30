@@ -26,15 +26,18 @@ export class SignupController {
     @Param('projectId') projectId: string,
     @Body() dto: GoogleSigninDto,
   ): Promise<SigninResponseDto> {
-    const { uid } = await this.googleSigninService.signUp(projectId, dto.idToken);
-    return { accessToken: this.tokenService.sign(uid) };
+    const { uuid } = await this.googleSigninService.signUp(projectId, dto.idToken);
+    return { accessToken: this.tokenService.sign(uuid, projectId) };
   }
 
   @Post('email')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: '이메일 회원가입 (인증 메일 발송)' })
   @ApiCreatedResponse({ description: '가입 완료. 인증 코드를 이메일로 발송.' })
-  async signUpWithEmail(@Body() dto: EmailSignupDto): Promise<void> {
-    await this.emailSignupService.signUp(dto.email, dto.password);
+  async signUpWithEmail(
+    @Param('projectId') projectId: string,
+    @Body() dto: EmailSignupDto,
+  ): Promise<void> {
+    await this.emailSignupService.signUp(projectId, dto.email, dto.password);
   }
 }

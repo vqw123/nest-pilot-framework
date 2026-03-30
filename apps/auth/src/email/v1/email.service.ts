@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository, Repository } from '@libs/database';
-import { EmailAccountEntity } from '../../entity/email-account.entity';
+import { EmailIdentityEntity } from '../../entity/email-identity.entity';
 import { AccountEntity } from '../../entity/account.entity';
 
 const VERIFICATION_EXPIRE_MINUTES = 30;
@@ -10,48 +10,48 @@ export class EmailService {
   private readonly logger = new Logger(EmailService.name);
 
   constructor(
-    @InjectRepository(EmailAccountEntity)
-    private readonly emailAccountRepository: Repository<EmailAccountEntity>,
+    @InjectRepository(EmailIdentityEntity)
+    private readonly emailIdentityRepository: Repository<EmailIdentityEntity>,
     @InjectRepository(AccountEntity)
     private readonly accountRepository: Repository<AccountEntity>,
   ) {}
 
-  /** 인증 코드 확인 → 인증 완료 처리 후 uid 반환 */
-  async verify(email: string, code: string): Promise<number> {
-    const emailAccount = await this.emailAccountRepository.findOne({ where: { email } });
-    if (!emailAccount) {
+  /** 인증 코드 확인 → 인증 완료 처리 후 uuid 반환 */
+  async verify(email: string, code: string): Promise<string> {
+    const emailIdentity = await this.emailIdentityRepository.findOne({ where: { email } });
+    if (!emailIdentity) {
       throw new NotFoundException('Email account not found');
     }
 
-    if (emailAccount.verified) {
+    if (emailIdentity.verified) {
       throw new BadRequestException('Email is already verified');
     }
 
-    if (emailAccount.verificationCode !== code) {
+    if (emailIdentity.verificationCode !== code) {
       throw new BadRequestException('Invalid verification code');
     }
 
-    if (new Date() > emailAccount.verificationExpireDate) {
+    if (new Date() > emailIdentity.verificationExpireDate) {
       throw new BadRequestException('Verification code has expired');
     }
 
-    await this.emailAccountRepository.update(
+    await this.emailIdentityRepository.update(
       { email },
       { verified: true, verificationCode: null, verificationExpireDate: null },
     );
 
-    const account = await this.accountRepository.findOne({ where: { uuid: emailAccount.uuid } });
-    return account.uid;
+    const account = await this.accountRepository.findOne({ where: { uid: emailIdentity.uid } });
+    return account.uuid;
   }
 
   /** 인증 코드 재발송 */
   async resend(email: string): Promise<void> {
-    const emailAccount = await this.emailAccountRepository.findOne({ where: { email } });
-    if (!emailAccount) {
+    const emailIdentity = await this.emailIdentityRepository.findOne({ where: { email } });
+    if (!emailIdentity) {
       throw new NotFoundException('Email account not found');
     }
 
-    if (emailAccount.verified) {
+    if (emailIdentity.verified) {
       throw new BadRequestException('Email is already verified');
     }
 
@@ -60,7 +60,7 @@ export class EmailService {
       Date.now() + VERIFICATION_EXPIRE_MINUTES * 60 * 1000,
     );
 
-    await this.emailAccountRepository.update(
+    await this.emailIdentityRepository.update(
       { email },
       { verificationCode, verificationExpireDate },
     );

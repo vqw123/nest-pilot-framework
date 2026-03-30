@@ -40,26 +40,38 @@ describe('TokenService', () => {
   });
 
   describe('sign', () => {
-    it('returns a string token', () => {
+    it('returns a string token with aud and jti', () => {
       jwtService.sign.mockReturnValue('mock-token');
 
-      const result = service.sign(42);
+      const result = service.sign('test-uuid', 'project-1');
 
       expect(result).toBe('mock-token');
       expect(jwtService.sign).toHaveBeenCalledWith(
-        { sub: 42 },
+        { sub: 'test-uuid', jti: expect.any(String) },
         expect.objectContaining({
           algorithm: 'RS256',
           issuer: 'test-issuer',
+          audience: 'project-1',
           expiresIn: '1d',
         }),
       );
+    });
+
+    it('generates a unique jti on each call', () => {
+      jwtService.sign.mockReturnValue('mock-token');
+
+      service.sign('test-uuid', 'project-1');
+      service.sign('test-uuid', 'project-1');
+
+      const firstCall = jwtService.sign.mock.calls[0][0] as { jti: string };
+      const secondCall = jwtService.sign.mock.calls[1][0] as { jti: string };
+      expect(firstCall.jti).not.toBe(secondCall.jti);
     });
   });
 
   describe('verify', () => {
     it('returns JwtPayload when token is valid', () => {
-      const payload: JwtPayload = { sub: 1, iss: 'test-issuer', iat: 1000, exp: 2000 };
+      const payload: JwtPayload = { sub: 'uuid-1', aud: 'project-1', iss: 'test-issuer', jti: 'jti-1', iat: 1000, exp: 2000 };
       jwtService.verify.mockReturnValue(payload);
 
       const result = service.verify('valid-token');

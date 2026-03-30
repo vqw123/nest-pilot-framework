@@ -1,7 +1,8 @@
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository, Repository, DataSource } from '@libs/database';
-import { EmailAccountEntity } from '../../../entity/email-account.entity';
+import { EmailIdentityEntity } from '../../../entity/email-identity.entity';
 import { AccountEntity } from '../../../entity/account.entity';
+import { ProjectAccountEntity } from '../../../entity/project-account.entity';
 import * as bcrypt from 'bcrypt';
 import { randomUUID } from 'crypto';
 
@@ -13,13 +14,13 @@ export class EmailSignupService {
   private readonly logger = new Logger(EmailSignupService.name);
 
   constructor(
-    @InjectRepository(EmailAccountEntity)
-    private readonly emailAccountRepository: Repository<EmailAccountEntity>,
+    @InjectRepository(EmailIdentityEntity)
+    private readonly emailIdentityRepository: Repository<EmailIdentityEntity>,
     private readonly dataSource: DataSource,
   ) {}
 
-  async signUp(email: string, password: string): Promise<void> {
-    const existing = await this.emailAccountRepository.findOne({ where: { email } });
+  async signUp(projectId: string, email: string, password: string): Promise<void> {
+    const existing = await this.emailIdentityRepository.findOne({ where: { email } });
     if (existing) {
       throw new ConflictException('Email already registered');
     }
@@ -34,17 +35,23 @@ export class EmailSignupService {
       const uuid = randomUUID();
 
       const account = manager.create(AccountEntity, { uuid });
-      await manager.save(AccountEntity, account);
+      const savedAccount = await manager.save(AccountEntity, account);
 
-      const emailAccount = manager.create(EmailAccountEntity, {
+      const emailIdentity = manager.create(EmailIdentityEntity, {
         email,
-        uuid,
+        uid: savedAccount.uid,
         passwordHash,
         verified: false,
         verificationCode,
         verificationExpireDate,
       });
-      await manager.save(EmailAccountEntity, emailAccount);
+      await manager.save(EmailIdentityEntity, emailIdentity);
+
+      const projectAccount = manager.create(ProjectAccountEntity, {
+        projectId,
+        uid: savedAccount.uid,
+      });
+      await manager.save(ProjectAccountEntity, projectAccount);
     });
 
     // TODO: 실제 이메일 발송 서비스로 교체. 현재는 콘솔 로그로 대체한다.

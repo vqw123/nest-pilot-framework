@@ -1,13 +1,13 @@
 import { Column, CreateDateColumn, Entity, PrimaryColumn } from '@libs/database';
 
-@Entity({ database: 'db_auth', name: 'tb_auth_email_account' })
-export class EmailAccountEntity {
+@Entity({ database: 'db_auth', name: 'tb_auth_email_identity' })
+export class EmailIdentityEntity {
   @PrimaryColumn({ name: 'email', type: 'varchar', length: 255 })
   email: string;
 
-  /** account 테이블의 uuid. 소셜 계정과 링킹 가능. */
-  @Column({ name: 'uuid', type: 'varchar', length: 64 })
-  uuid: string;
+  /** account 테이블의 uid. 통합 계정 내부 식별자. */
+  @Column({ name: 'uid', type: 'bigint' })
+  uid: number;
 
   @Column({ name: 'password_hash', type: 'varchar', length: 255 })
   passwordHash: string;

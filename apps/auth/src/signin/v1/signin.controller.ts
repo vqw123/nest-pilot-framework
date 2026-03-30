@@ -28,8 +28,8 @@ export class SigninController {
     @Param('projectId') projectId: string,
     @Body() dto: GoogleSigninDto,
   ): Promise<SigninResponseDto> {
-    const { uid } = await this.googleSigninService.signIn(projectId, dto.idToken);
-    return { accessToken: this.tokenService.sign(uid) };
+    const { uuid } = await this.googleSigninService.signIn(projectId, dto.idToken);
+    return { accessToken: this.tokenService.sign(uuid, projectId) };
   }
 
   @Post('apple')
@@ -40,8 +40,8 @@ export class SigninController {
     @Param('projectId') projectId: string,
     @Body() dto: GoogleSigninDto,
   ): Promise<SigninResponseDto> {
-    const { uid } = await this.appleSigninService.signIn(projectId, dto.idToken);
-    return { accessToken: this.tokenService.sign(uid) };
+    const { uuid } = await this.appleSigninService.signIn(projectId, dto.idToken);
+    return { accessToken: this.tokenService.sign(uuid, projectId) };
   }
 
   @Post('email')
@@ -49,10 +49,10 @@ export class SigninController {
   @ApiOperation({ summary: '이메일 로그인' })
   @ApiOkResponse({ type: SigninResponseDto })
   async signInWithEmail(
-    @Param('projectId') _projectId: string,
+    @Param('projectId') projectId: string,
     @Body() dto: EmailSigninDto,
   ): Promise<SigninResponseDto> {
-    const result = await this.emailSigninService.signIn(dto.email, dto.password);
-    return { accessToken: this.tokenService.sign(result.uid) };
+    const { uuid } = await this.emailSigninService.signIn(projectId, dto.email, dto.password);
+    return { accessToken: this.tokenService.sign(uuid, projectId) };
   }
 }

@@ -18,6 +18,12 @@ export interface BearerModuleOptions {
   /** JWT issuer 검증 */
   issuer?: string;
 
+  /**
+   * JWT audience 검증.
+   * 게임 서버에서 자신의 projectId를 지정하면 다른 프로젝트 토큰을 거부한다.
+   */
+  audience?: string;
+
   /** 허용 알고리즘 (기본값: ['RS256']) */
   algorithms?: Algorithm[];
 }

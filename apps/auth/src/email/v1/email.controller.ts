@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiOkResponse } from '@nestjs/swagger';
 import { ProjectGuard } from '../../common/guard/project.guard';
 import { TokenService } from '../../token/v1/token.service';
@@ -20,9 +20,12 @@ export class EmailController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: '이메일 인증 코드 확인 → JWT 발급' })
   @ApiOkResponse({ type: SigninResponseDto })
-  async verify(@Body() dto: VerifyEmailDto): Promise<SigninResponseDto> {
-    const uid = await this.emailService.verify(dto.email, dto.code);
-    return { accessToken: this.tokenService.sign(uid) };
+  async verify(
+    @Param('projectId') projectId: string,
+    @Body() dto: VerifyEmailDto,
+  ): Promise<SigninResponseDto> {
+    const uuid = await this.emailService.verify(dto.email, dto.code);
+    return { accessToken: this.tokenService.sign(uuid, projectId) };
   }
 
   @Post('resend')

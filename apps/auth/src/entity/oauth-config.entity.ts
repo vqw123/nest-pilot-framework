@@ -1,11 +1,14 @@
-import { Column, CreateDateColumn, Entity, PrimaryColumn } from '@libs/database';
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from '@libs/database';
 
 @Entity({ database: 'db_auth', name: 'tb_auth_oauth_config' })
 export class OauthConfigEntity {
-  @PrimaryColumn({ name: 'project_id', type: 'varchar', length: 255 })
+  @PrimaryGeneratedColumn({ name: 'oauth_config_id', type: 'bigint' })
+  oauthConfigId: number;
+
+  @Column({ name: 'project_id', type: 'varchar', length: 255 })
   projectId: string;
 
-  @PrimaryColumn({ name: 'provider', type: 'varchar', length: 64 })
+  @Column({ name: 'provider', type: 'varchar', length: 64 })
   provider: string;
 
   /** provider별 OAuth 인증 정보 JSON (Google: client_id/secret, Apple: client_id/key 등) */

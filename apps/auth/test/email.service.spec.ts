@@ -1,25 +1,25 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { EmailService } from '../src/email/v1/email.service';
-import { EmailAccountEntity } from '../src/entity/email-account.entity';
+import { EmailIdentityEntity } from '../src/entity/email-identity.entity';
 import { AccountEntity } from '../src/entity/account.entity';
 import { Repository } from '@libs/database';
 
 describe('EmailService', () => {
   let service: EmailService;
-  let emailAccountRepository: jest.Mocked<Repository<EmailAccountEntity>>;
+  let emailIdentityRepository: jest.Mocked<Repository<EmailIdentityEntity>>;
   let accountRepository: jest.Mocked<Repository<AccountEntity>>;
 
   beforeEach(() => {
-    emailAccountRepository = {
+    emailIdentityRepository = {
       findOne: jest.fn(),
       update: jest.fn().mockResolvedValue(undefined),
-    } as unknown as jest.Mocked<Repository<EmailAccountEntity>>;
+    } as unknown as jest.Mocked<Repository<EmailIdentityEntity>>;
 
     accountRepository = {
       findOne: jest.fn(),
     } as unknown as jest.Mocked<Repository<AccountEntity>>;
 
-    service = new EmailService(emailAccountRepository, accountRepository);
+    service = new EmailService(emailIdentityRepository, accountRepository);
   });
 
   describe('verify', () => {
@@ -27,18 +27,18 @@ describe('EmailService', () => {
     const code = '123456';
 
     it('throws NotFoundException when email is not found', async () => {
-      emailAccountRepository.findOne.mockResolvedValue(null);
+      emailIdentityRepository.findOne.mockResolvedValue(null);
 
       await expect(service.verify(email, code)).rejects.toThrow(NotFoundException);
     });
 
     it('throws BadRequestException when email is already verified', async () => {
-      emailAccountRepository.findOne.mockResolvedValue({
+      emailIdentityRepository.findOne.mockResolvedValue({
         email,
         verified: true,
         verificationCode: code,
         verificationExpireDate: new Date(Date.now() + 60_000),
-      } as EmailAccountEntity);
+      } as EmailIdentityEntity);
 
       await expect(service.verify(email, code)).rejects.toThrow(
         new BadRequestException('Email is already verified'),
@@ -46,12 +46,12 @@ describe('EmailService', () => {
     });
 
     it('throws BadRequestException when verification code is wrong', async () => {
-      emailAccountRepository.findOne.mockResolvedValue({
+      emailIdentityRepository.findOne.mockResolvedValue({
         email,
         verified: false,
         verificationCode: 'wrong-code',
         verificationExpireDate: new Date(Date.now() + 60_000),
-      } as EmailAccountEntity);
+      } as EmailIdentityEntity);
 
       await expect(service.verify(email, code)).rejects.toThrow(
         new BadRequestException('Invalid verification code'),
@@ -59,35 +59,35 @@ describe('EmailService', () => {
     });
 
     it('throws BadRequestException when verification code has expired', async () => {
-      emailAccountRepository.findOne.mockResolvedValue({
+      emailIdentityRepository.findOne.mockResolvedValue({
         email,
         verified: false,
         verificationCode: code,
         verificationExpireDate: new Date(Date.now() - 1000), // past
-      } as EmailAccountEntity);
+      } as EmailIdentityEntity);
 
       await expect(service.verify(email, code)).rejects.toThrow(
         new BadRequestException('Verification code has expired'),
       );
     });
 
-    it('updates the account and returns uid when code is valid', async () => {
-      const emailAccount: Partial<EmailAccountEntity> = {
+    it('updates email_identity and returns uuid when code is valid', async () => {
+      const emailIdentity: Partial<EmailIdentityEntity> = {
         email,
-        uuid: 'uuid-1',
+        uid: 10,
         verified: false,
         verificationCode: code,
         verificationExpireDate: new Date(Date.now() + 60_000),
       };
-      const account: Partial<AccountEntity> = { uid: 10, uuid: 'uuid-1' };
+      const account: Partial<AccountEntity> = { uid: 10, uuid: 'uuid-abc' };
 
-      emailAccountRepository.findOne.mockResolvedValue(emailAccount as EmailAccountEntity);
+      emailIdentityRepository.findOne.mockResolvedValue(emailIdentity as EmailIdentityEntity);
       accountRepository.findOne.mockResolvedValue(account as AccountEntity);
 
-      const uid = await service.verify(email, code);
+      const result = await service.verify(email, code);
 
-      expect(uid).toBe(10);
-      expect(emailAccountRepository.update).toHaveBeenCalledWith(
+      expect(result).toBe('uuid-abc');
+      expect(emailIdentityRepository.update).toHaveBeenCalledWith(
         { email },
         { verified: true, verificationCode: null, verificationExpireDate: null },
       );
@@ -98,16 +98,16 @@ describe('EmailService', () => {
     const email = 'user@example.com';
 
     it('throws NotFoundException when email is not found', async () => {
-      emailAccountRepository.findOne.mockResolvedValue(null);
+      emailIdentityRepository.findOne.mockResolvedValue(null);
 
       await expect(service.resend(email)).rejects.toThrow(NotFoundException);
     });
 
     it('throws BadRequestException when email is already verified', async () => {
-      emailAccountRepository.findOne.mockResolvedValue({
+      emailIdentityRepository.findOne.mockResolvedValue({
         email,
         verified: true,
-      } as EmailAccountEntity);
+      } as EmailIdentityEntity);
 
       await expect(service.resend(email)).rejects.toThrow(
         new BadRequestException('Email is already verified'),
@@ -115,16 +115,16 @@ describe('EmailService', () => {
     });
 
     it('updates verification code and expiry for unverified account', async () => {
-      emailAccountRepository.findOne.mockResolvedValue({
+      emailIdentityRepository.findOne.mockResolvedValue({
         email,
         verified: false,
         verificationCode: '000000',
         verificationExpireDate: new Date(),
-      } as EmailAccountEntity);
+      } as EmailIdentityEntity);
 
       await service.resend(email);
 
-      expect(emailAccountRepository.update).toHaveBeenCalledWith(
+      expect(emailIdentityRepository.update).toHaveBeenCalledWith(
         { email },
         {
           verificationCode: expect.stringMatching(/^\d{6}$/),

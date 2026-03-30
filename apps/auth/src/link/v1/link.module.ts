@@ -4,10 +4,9 @@ import { TokenModule } from '../../token/v1/token.module';
 import { SigninModule } from '../../signin/v1/signin.module';
 import { LinkController } from './link.controller';
 import { LinkService } from './link.service';
-import { SocialEntity } from '../../entity/social.entity';
-import { SocialBindingEntity } from '../../entity/social-binding.entity';
+import { IdentityEntity } from '../../entity/identity.entity';
+import { EmailIdentityEntity } from '../../entity/email-identity.entity';
 import { AccountEntity } from '../../entity/account.entity';
-import { EmailAccountEntity } from '../../entity/email-account.entity';
 import { ProjectEntity } from '../../entity/project.entity';
 
 @Module({
@@ -15,10 +14,9 @@ import { ProjectEntity } from '../../entity/project.entity';
     TokenModule,
     SigninModule,
     DatabaseModule.forFeature([
-      SocialEntity,
-      SocialBindingEntity,
+      IdentityEntity,
+      EmailIdentityEntity,
       AccountEntity,
-      EmailAccountEntity,
       ProjectEntity,
     ]),
   ],

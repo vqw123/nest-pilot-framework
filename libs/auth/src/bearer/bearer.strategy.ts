@@ -33,6 +33,7 @@ export class BearerStrategy extends PassportStrategy(Strategy, 'bearer') {
             secretOrKey: Buffer.from(options.publicKey, 'base64').toString('utf-8'),
           }),
       issuer: options.issuer,
+      audience: options.audience,
       algorithms: options.algorithms ?? ['RS256'],
       ignoreExpiration: false,
     });

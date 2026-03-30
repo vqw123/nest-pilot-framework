@@ -3,6 +3,7 @@ import { ConfigService } from '@libs/config';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from '@libs/auth';
 import * as crypto from 'crypto';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class TokenService implements OnModuleInit {
@@ -28,14 +29,18 @@ export class TokenService implements OnModuleInit {
     this.kid = this.computeKid();
   }
 
-  /** uid를 sub으로 하는 RS256 JWT를 발급한다. kid를 헤더에 포함해 JWKS 키 조회를 지원한다. */
-  sign(uid: number): string {
+  /**
+   * uuid를 sub, projectId를 aud, 신규 UUID를 jti로 하는 RS256 JWT를 발급한다.
+   * kid를 헤더에 포함해 JWKS 키 조회를 지원한다.
+   */
+  sign(uuid: string, projectId: string): string {
     return this.jwtService.sign(
-      { sub: uid },
+      { sub: uuid, jti: randomUUID() },
       {
         algorithm: 'RS256',
         privateKey: this.privateKey,
         issuer: this.issuer,
+        audience: projectId,
         expiresIn: this.expiresIn as any,
         keyid: this.kid,
       },

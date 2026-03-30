@@ -5,7 +5,7 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
  */
 @Injectable()
 export class AppleSigninService {
-  async signIn(_projectId: string, _idToken: string): Promise<{ uid: number }> {
+  async signIn(_projectId: string, _idToken: string): Promise<{ uuid: string }> {
     throw new NotImplementedException('Apple Sign-In is not yet implemented');
   }
 }

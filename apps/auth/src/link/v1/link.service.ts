@@ -1,95 +1,74 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository, Repository } from '@libs/database';
-import { SocialEntity } from '../../entity/social.entity';
-import { SocialBindingEntity } from '../../entity/social-binding.entity';
+import { IdentityEntity } from '../../entity/identity.entity';
+import { EmailIdentityEntity } from '../../entity/email-identity.entity';
 import { AccountEntity } from '../../entity/account.entity';
-import { EmailAccountEntity } from '../../entity/email-account.entity';
+import { Provider } from '../../entity/provider.enum';
 
 @Injectable()
 export class LinkService {
   constructor(
-    @InjectRepository(SocialEntity)
-    private readonly socialRepository: Repository<SocialEntity>,
-    @InjectRepository(SocialBindingEntity)
-    private readonly socialBindingRepository: Repository<SocialBindingEntity>,
+    @InjectRepository(IdentityEntity)
+    private readonly identityRepository: Repository<IdentityEntity>,
+    @InjectRepository(EmailIdentityEntity)
+    private readonly emailIdentityRepository: Repository<EmailIdentityEntity>,
     @InjectRepository(AccountEntity)
     private readonly accountRepository: Repository<AccountEntity>,
-    @InjectRepository(EmailAccountEntity)
-    private readonly emailAccountRepository: Repository<EmailAccountEntity>,
   ) {}
 
   /**
-   * 소셜 계정을 현재 로그인된 계정(uid)에 연동한다.
-   * AccountService.signInWithSocial 과 달리 기존 uuid를 유지하고 새 소셜을 연결한다.
+   * 소셜 계정을 현재 로그인된 계정(uuid)에 연동한다.
+   * 이미 다른 계정에 연동된 소셜이면 BadRequestException.
    */
   async linkSocial(
-    uid: number,
-    projectId: string,
-    provider: string,
-    socialId: string,
-    _properties: Record<string, any>,
+    uuid: string,
+    provider: Provider,
+    providerUserId: string,
   ): Promise<void> {
-    const account = await this.accountRepository.findOne({ where: { uid } });
+    const account = await this.accountRepository.findOne({ where: { uuid } });
     if (!account) {
       throw new NotFoundException('Account not found');
     }
 
-    const existing = await this.socialRepository.findOne({ where: { provider, socialId } });
-    if (existing && existing.uuid !== account.uuid) {
+    const existing = await this.identityRepository.findOne({
+      where: { provider, providerUserId },
+    });
+
+    if (existing && existing.uid !== account.uid) {
       throw new BadRequestException('This social account is already linked to another account');
     }
 
     if (!existing) {
-      await this.socialRepository.save({ provider, socialId, uuid: account.uuid });
-    }
-
-    const existingBinding = await this.socialBindingRepository.findOne({
-      where: { projectId, provider, socialId },
-    });
-
-    if (!existingBinding) {
-      await this.socialBindingRepository.save({
-        projectId,
-        provider,
-        socialId,
-        uuid: account.uuid,
-      });
+      await this.identityRepository.save({ provider, providerUserId, uid: account.uid });
     }
   }
 
   /**
    * 소셜 계정 연동을 해제한다.
-   * 최소 1개의 로그인 수단이 남아있어야 한다.
+   * identity(소셜) + email_identity 합산 기준으로 최소 1개의 로그인 수단이 남아있어야 한다.
    */
-  async unlinkSocial(uid: number, projectId: string, provider: string): Promise<void> {
-    const account = await this.accountRepository.findOne({ where: { uid } });
+  async unlinkSocial(uuid: string, provider: Provider): Promise<void> {
+    const account = await this.accountRepository.findOne({ where: { uuid } });
     if (!account) {
       throw new NotFoundException('Account not found');
     }
 
-    const binding = await this.socialBindingRepository.findOne({
-      where: { projectId, provider, uuid: account.uuid },
+    const identity = await this.identityRepository.findOne({
+      where: { provider, uid: account.uid },
     });
 
-    if (!binding) {
-      throw new NotFoundException('Social account binding not found');
+    if (!identity) {
+      throw new NotFoundException('Social account not linked');
     }
 
-    // 최소 1개 로그인 수단 보장: 남은 소셜 binding + 이메일 계정 합산
-    const remainingBindings = await this.socialBindingRepository.count({
-      where: { projectId, uuid: account.uuid },
-    });
+    // 최소 1개 로그인 수단 보장: 소셜 identity 개수 + 이메일 identity 존재 여부 (전역 기준)
+    const socialCount = await this.identityRepository.count({ where: { uid: account.uid } });
+    const hasEmail = await this.emailIdentityRepository.findOne({ where: { uid: account.uid } });
 
-    const hasEmail = await this.emailAccountRepository.findOne({
-      where: { uuid: account.uuid },
-    });
-
-    if (remainingBindings <= 1 && !hasEmail) {
-      throw new BadRequestException(
-        'Cannot unlink: at least one login method must remain',
-      );
+    if (socialCount <= 1 && !hasEmail) {
+      throw new BadRequestException('Cannot unlink: at least one login method must remain');
     }
 
-    await this.socialBindingRepository.delete({ projectId, provider, socialId: binding.socialId });
+    await this.identityRepository.delete({ provider, uid: account.uid });
   }
 }

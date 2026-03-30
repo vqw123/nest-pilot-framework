@@ -1,215 +1,160 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { LinkService } from '../src/link/v1/link.service';
-import { SocialEntity } from '../src/entity/social.entity';
-import { SocialBindingEntity } from '../src/entity/social-binding.entity';
+import { IdentityEntity } from '../src/entity/identity.entity';
+import { EmailIdentityEntity } from '../src/entity/email-identity.entity';
 import { AccountEntity } from '../src/entity/account.entity';
-import { EmailAccountEntity } from '../src/entity/email-account.entity';
+import { Provider } from '../src/entity/provider.enum';
 import { Repository } from '@libs/database';
 
 describe('LinkService', () => {
   let service: LinkService;
-  let socialRepository: jest.Mocked<Repository<SocialEntity>>;
-  let socialBindingRepository: jest.Mocked<Repository<SocialBindingEntity>>;
+  let identityRepository: jest.Mocked<Repository<IdentityEntity>>;
+  let emailIdentityRepository: jest.Mocked<Repository<EmailIdentityEntity>>;
   let accountRepository: jest.Mocked<Repository<AccountEntity>>;
-  let emailAccountRepository: jest.Mocked<Repository<EmailAccountEntity>>;
 
   beforeEach(() => {
-    socialRepository = {
-      findOne: jest.fn(),
-      save: jest.fn().mockResolvedValue(undefined),
-    } as unknown as jest.Mocked<Repository<SocialEntity>>;
-
-    socialBindingRepository = {
+    identityRepository = {
       findOne: jest.fn(),
       save: jest.fn().mockResolvedValue(undefined),
       count: jest.fn(),
       delete: jest.fn().mockResolvedValue(undefined),
-    } as unknown as jest.Mocked<Repository<SocialBindingEntity>>;
+    } as unknown as jest.Mocked<Repository<IdentityEntity>>;
+
+    emailIdentityRepository = {
+      findOne: jest.fn(),
+    } as unknown as jest.Mocked<Repository<EmailIdentityEntity>>;
 
     accountRepository = {
       findOne: jest.fn(),
     } as unknown as jest.Mocked<Repository<AccountEntity>>;
 
-    emailAccountRepository = {
-      findOne: jest.fn(),
-    } as unknown as jest.Mocked<Repository<EmailAccountEntity>>;
-
-    service = new LinkService(
-      socialRepository,
-      socialBindingRepository,
-      accountRepository,
-      emailAccountRepository,
-    );
+    service = new LinkService(identityRepository, emailIdentityRepository, accountRepository);
   });
 
   describe('linkSocial', () => {
-    const uid = 1;
-    const projectId = 'project-1';
-    const provider = 'google';
-    const socialId = 'social-abc';
-    const properties = { email: 'test@example.com' };
+    const uuid = 'uuid-mine';
+    const provider = Provider.GOOGLE;
+    const providerUserId = 'google-sub-abc';
 
     it('throws NotFoundException when account is not found', async () => {
       accountRepository.findOne.mockResolvedValue(null);
 
-      await expect(
-        service.linkSocial(uid, projectId, provider, socialId, properties),
-      ).rejects.toThrow(new NotFoundException('Account not found'));
+      await expect(service.linkSocial(uuid, provider, providerUserId)).rejects.toThrow(
+        new NotFoundException('Account not found'),
+      );
     });
 
-    it('throws BadRequestException when social is already linked to a different account', async () => {
-      const account: Partial<AccountEntity> = { uid, uuid: 'uuid-mine' };
-      const existingSocial: Partial<SocialEntity> = {
+    it('throws BadRequestException when identity is already linked to another account', async () => {
+      const account: Partial<AccountEntity> = { uid: 1, uuid };
+      const existingIdentity: Partial<IdentityEntity> = {
         provider,
-        socialId,
-        uuid: 'uuid-other', // different account
+        providerUserId,
+        uid: 99, // different account
       };
 
       accountRepository.findOne.mockResolvedValue(account as AccountEntity);
-      socialRepository.findOne.mockResolvedValue(existingSocial as SocialEntity);
+      identityRepository.findOne.mockResolvedValue(existingIdentity as IdentityEntity);
 
-      await expect(
-        service.linkSocial(uid, projectId, provider, socialId, properties),
-      ).rejects.toThrow(
+      await expect(service.linkSocial(uuid, provider, providerUserId)).rejects.toThrow(
         new BadRequestException('This social account is already linked to another account'),
       );
     });
 
-    it('saves social and binding when social does not exist yet', async () => {
-      const account: Partial<AccountEntity> = { uid, uuid: 'uuid-mine' };
+    it('saves identity when it does not exist yet', async () => {
+      const account: Partial<AccountEntity> = { uid: 1, uuid };
 
       accountRepository.findOne.mockResolvedValue(account as AccountEntity);
-      socialRepository.findOne.mockResolvedValue(null);
-      socialBindingRepository.findOne.mockResolvedValue(null);
+      identityRepository.findOne.mockResolvedValue(null);
 
-      await service.linkSocial(uid, projectId, provider, socialId, properties);
+      await service.linkSocial(uuid, provider, providerUserId);
 
-      expect(socialRepository.save).toHaveBeenCalledWith({
+      expect(identityRepository.save).toHaveBeenCalledWith({
         provider,
-        socialId,
-        uuid: 'uuid-mine',
-      });
-      expect(socialBindingRepository.save).toHaveBeenCalledWith({
-        projectId,
-        provider,
-        socialId,
-        uuid: 'uuid-mine',
+        providerUserId,
+        uid: 1,
       });
     });
 
-    it('saves only binding when social exists for the same account', async () => {
-      const account: Partial<AccountEntity> = { uid, uuid: 'uuid-mine' };
-      const existingSocial: Partial<SocialEntity> = {
+    it('skips save when identity already belongs to the same account', async () => {
+      const account: Partial<AccountEntity> = { uid: 1, uuid };
+      const existingIdentity: Partial<IdentityEntity> = {
         provider,
-        socialId,
-        uuid: 'uuid-mine', // same uuid
+        providerUserId,
+        uid: 1, // same account
       };
 
       accountRepository.findOne.mockResolvedValue(account as AccountEntity);
-      socialRepository.findOne.mockResolvedValue(existingSocial as SocialEntity);
-      socialBindingRepository.findOne.mockResolvedValue(null);
+      identityRepository.findOne.mockResolvedValue(existingIdentity as IdentityEntity);
 
-      await service.linkSocial(uid, projectId, provider, socialId, properties);
+      await service.linkSocial(uuid, provider, providerUserId);
 
-      expect(socialRepository.save).not.toHaveBeenCalled();
-      expect(socialBindingRepository.save).toHaveBeenCalledWith({
-        projectId,
-        provider,
-        socialId,
-        uuid: 'uuid-mine',
-      });
+      expect(identityRepository.save).not.toHaveBeenCalled();
     });
   });
 
   describe('unlinkSocial', () => {
-    const uid = 1;
-    const projectId = 'project-1';
-    const provider = 'google';
+    const uuid = 'uuid-1';
+    const provider = Provider.GOOGLE;
 
     it('throws NotFoundException when account is not found', async () => {
       accountRepository.findOne.mockResolvedValue(null);
 
-      await expect(service.unlinkSocial(uid, projectId, provider)).rejects.toThrow(
-        NotFoundException,
+      await expect(service.unlinkSocial(uuid, provider)).rejects.toThrow(NotFoundException);
+    });
+
+    it('throws NotFoundException when identity is not linked', async () => {
+      const account: Partial<AccountEntity> = { uid: 1, uuid };
+      accountRepository.findOne.mockResolvedValue(account as AccountEntity);
+      identityRepository.findOne.mockResolvedValue(null);
+
+      await expect(service.unlinkSocial(uuid, provider)).rejects.toThrow(
+        new NotFoundException('Social account not linked'),
       );
     });
 
-    it('throws NotFoundException when binding is not found', async () => {
-      const account: Partial<AccountEntity> = { uid, uuid: 'uuid-1' };
-      accountRepository.findOne.mockResolvedValue(account as AccountEntity);
-      socialBindingRepository.findOne.mockResolvedValue(null);
-
-      await expect(service.unlinkSocial(uid, projectId, provider)).rejects.toThrow(
-        new NotFoundException('Social account binding not found'),
-      );
-    });
-
-    it('throws BadRequestException when it is the last login method and no email', async () => {
-      const account: Partial<AccountEntity> = { uid, uuid: 'uuid-1' };
-      const binding: Partial<SocialBindingEntity> = {
-        projectId,
-        provider,
-        socialId: 'social-abc',
-        uuid: 'uuid-1',
-      };
+    it('throws BadRequestException when it is the last login method and no email identity', async () => {
+      const account: Partial<AccountEntity> = { uid: 1, uuid };
+      const identity: Partial<IdentityEntity> = { provider, providerUserId: 'google-sub', uid: 1 };
 
       accountRepository.findOne.mockResolvedValue(account as AccountEntity);
-      socialBindingRepository.findOne.mockResolvedValue(binding as SocialBindingEntity);
-      socialBindingRepository.count.mockResolvedValue(1); // only 1 binding
-      emailAccountRepository.findOne.mockResolvedValue(null); // no email
+      identityRepository.findOne.mockResolvedValue(identity as IdentityEntity);
+      identityRepository.count.mockResolvedValue(1); // only 1 social identity
+      emailIdentityRepository.findOne.mockResolvedValue(null); // no email
 
-      await expect(service.unlinkSocial(uid, projectId, provider)).rejects.toThrow(
+      await expect(service.unlinkSocial(uuid, provider)).rejects.toThrow(
         new BadRequestException('Cannot unlink: at least one login method must remain'),
       );
     });
 
-    it('deletes binding when account has an email account', async () => {
-      const account: Partial<AccountEntity> = { uid, uuid: 'uuid-1' };
-      const binding: Partial<SocialBindingEntity> = {
-        projectId,
-        provider,
-        socialId: 'social-abc',
-        uuid: 'uuid-1',
-      };
+    it('deletes identity when account has an email identity', async () => {
+      const account: Partial<AccountEntity> = { uid: 1, uuid };
+      const identity: Partial<IdentityEntity> = { provider, providerUserId: 'google-sub', uid: 1 };
 
       accountRepository.findOne.mockResolvedValue(account as AccountEntity);
-      socialBindingRepository.findOne.mockResolvedValue(binding as SocialBindingEntity);
-      socialBindingRepository.count.mockResolvedValue(1); // only 1 binding
-      emailAccountRepository.findOne.mockResolvedValue({
+      identityRepository.findOne.mockResolvedValue(identity as IdentityEntity);
+      identityRepository.count.mockResolvedValue(1); // only 1 social identity
+      emailIdentityRepository.findOne.mockResolvedValue({
         email: 'user@example.com',
-        uuid: 'uuid-1',
-      } as EmailAccountEntity);
+        uid: 1,
+      } as EmailIdentityEntity);
 
-      await service.unlinkSocial(uid, projectId, provider);
+      await service.unlinkSocial(uuid, provider);
 
-      expect(socialBindingRepository.delete).toHaveBeenCalledWith({
-        projectId,
-        provider,
-        socialId: 'social-abc',
-      });
+      expect(identityRepository.delete).toHaveBeenCalledWith({ provider, uid: 1 });
     });
 
-    it('deletes binding when there are other social bindings remaining', async () => {
-      const account: Partial<AccountEntity> = { uid, uuid: 'uuid-1' };
-      const binding: Partial<SocialBindingEntity> = {
-        projectId,
-        provider,
-        socialId: 'social-abc',
-        uuid: 'uuid-1',
-      };
+    it('deletes identity when other social identities remain', async () => {
+      const account: Partial<AccountEntity> = { uid: 1, uuid };
+      const identity: Partial<IdentityEntity> = { provider, providerUserId: 'google-sub', uid: 1 };
 
       accountRepository.findOne.mockResolvedValue(account as AccountEntity);
-      socialBindingRepository.findOne.mockResolvedValue(binding as SocialBindingEntity);
-      socialBindingRepository.count.mockResolvedValue(2); // 2 bindings → safe to unlink
-      emailAccountRepository.findOne.mockResolvedValue(null);
+      identityRepository.findOne.mockResolvedValue(identity as IdentityEntity);
+      identityRepository.count.mockResolvedValue(2); // 2 social identities → safe to unlink
+      emailIdentityRepository.findOne.mockResolvedValue(null);
 
-      await service.unlinkSocial(uid, projectId, provider);
+      await service.unlinkSocial(uuid, provider);
 
-      expect(socialBindingRepository.delete).toHaveBeenCalledWith({
-        projectId,
-        provider,
-        socialId: 'social-abc',
-      });
+      expect(identityRepository.delete).toHaveBeenCalledWith({ provider, uid: 1 });
     });
   });
 });
