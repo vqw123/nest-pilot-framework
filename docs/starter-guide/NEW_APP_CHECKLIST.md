@@ -37,10 +37,10 @@
 
 ## 5. 로컬 실행
 
-- [ ] 필요한 Docker Compose 파일 선택
+- [ ] 필요한 Compose 파일 선택
 - [ ] Redis 실행 여부 확인
 - [ ] DB 실행 여부 확인
-- [ ] ZooKeeper 등 추가 의존성 확인
+- [ ] PostgreSQL 필요 여부 확인
 - [ ] `nest start {appName} --watch` 실행 확인
 
 ## 6. 테스트

@@ -5,26 +5,35 @@
 ## 기본 원칙
 
 - 앱 자체는 로컬에서 직접 실행 가능해야 합니다.
-- Redis, DB, ZooKeeper 같은 의존성은 Docker / Docker Compose로 쉽게 띄울 수 있어야 합니다.
+- Redis, MySQL, PostgreSQL 같은 의존성은 Docker / Docker Compose로 쉽게 띄울 수 있어야 합니다.
 - 모든 것을 무조건 Docker에 넣기보다 개발 생산성을 우선합니다.
 
 ## 권장 로컬 개발 방식
 
 ### 앱은 직접 실행
 
-예시:
-
 ```bash
 nest start {appName} --watch
 ```
 
-### 의존성은 Docker Compose로 실행
-
-예시:
+### 의존성은 Compose로 실행
 
 ```bash
-docker compose -f docker/compose/docker-compose.redis.yml up -d
-docker compose -f docker/compose/docker-compose.mysql.yml up -d
+docker compose -f .docker/docker-compose.yml up -d
+```
+
+또는 start script를 사용하면 MySQL replication 설정까지 자동으로 처리됩니다.
+
+macOS / Linux:
+
+```bash
+sh .docker/start.sh
+```
+
+Windows PowerShell:
+
+```powershell
+.docker/start.ps1
 ```
 
 ## 왜 이렇게 하는가
@@ -62,37 +71,12 @@ docker compose -f docker/compose/docker-compose.mysql.yml up -d
 - host: localhost
 - port: 5432
 
-### MSSQL
-
-- host: localhost
-- port: 1433
-
-### ZooKeeper
-
-- host: localhost
-- port: 2181
-
 ## 실행 예시
 
-### Redis만 필요한 경우
+### 기본 실행 (MySQL + Redis)
 
 ```bash
-docker compose -f docker/compose/docker-compose.redis.yml up -d
-nest start {appName} --watch
-```
-
-### MySQL + Redis가 필요한 경우
-
-```bash
-docker compose -f docker/compose/docker-compose.mysql.yml up -d
-docker compose -f docker/compose/docker-compose.redis.yml up -d
-nest start {appName} --watch
-```
-
-### 전체 의존성이 필요한 경우
-
-```bash
-docker compose -f docker/compose/docker-compose.local-full.yml up -d
+sh .docker/start.sh
 nest start {appName} --watch
 ```
 
@@ -125,7 +109,7 @@ apps/{appName}/config/local/
 
 ### DB 연결 실패
 
-- Docker Compose가 정상 기동됐는지
+- Compose가 정상 기동됐는지
 - host/port가 local config와 맞는지
 - username/password/database 이름이 맞는지
 
@@ -152,11 +136,5 @@ apps/{appName}/config/local/
 ## 컨테이너 정리
 
 ```bash
-docker compose -f docker/compose/docker-compose.local-full.yml down
-```
-
-또는 파일별 종료:
-
-```bash
-docker compose -f docker/compose/docker-compose.redis.yml down
+docker compose -f .docker/docker-compose.yml down
 ```

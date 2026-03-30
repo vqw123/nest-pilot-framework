@@ -4,8 +4,6 @@
 
 ## 1. 스타터 복사
 
-예시:
-
 ```bash
 cp -R nest-pilot-framework my-new-backend
 cd my-new-backend
@@ -63,27 +61,20 @@ nest generate app my-service
 
 ## 6. 로컬 의존성 실행
 
-`docker/compose` 아래의 Compose 파일을 사용합니다.
-
-예시:
-
 ```bash
-docker compose -f docker/compose/docker-compose.redis.yml up -d
-docker compose -f docker/compose/docker-compose.mysql.yml up -d
+sh .docker/start.sh
 ```
 
-또는 전체 의존성을 한 번에 실행:
+직접 실행하려면:
 
 ```bash
-docker compose -f docker/compose/docker-compose.local-full.yml up -d
+docker compose -f .docker/docker-compose.yml up -d
 ```
 
 ## 7. 대상 앱 실행
 
-예시:
-
 ```bash
-nest start auth --watch
+nest start {appName} --watch
 ```
 
 또는 package script가 맞춰져 있다면:

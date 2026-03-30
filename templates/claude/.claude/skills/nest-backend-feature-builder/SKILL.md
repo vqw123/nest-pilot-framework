@@ -70,7 +70,7 @@ description: 이 NestJS monorepo에서 NestJS 철학, MSA 경계, SOLID 원칙, 
 - 설계 이유
 - config 변경점
 - 로컬 실행 가이드
-- 필요 시 Docker 가이드
+- 필요 시 Compose 가이드
 - 추가/수정 테스트
 - 운영 관점 주의사항
 

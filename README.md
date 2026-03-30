@@ -175,3 +175,84 @@ apps/{appName}/config/
 | `@libs/http`     | ValidationPipe, Helmet/CORS                  | [바로가기](libs/http/README.md)     |
 | `@libs/swagger`  | Swagger 문서화                               | [바로가기](libs/swagger/README.md)  |
 | `@libs/auth`     | Bearer JWT (JWKS), Basic Auth, IP 필터 Guard | [바로가기](libs/auth/README.md)     |
+
+## 스타터 프로젝트로 사용하는 방법
+
+이 저장소는 단순 예제 프로젝트가 아니라, 새로운 NestJS 백엔드 프로젝트를 빠르게 시작하기 위한 스타터 프레임워크입니다.
+
+새 프로젝트를 시작할 때는 아래 순서를 권장합니다.
+
+### 1. 저장소 복사 또는 템플릿처럼 사용
+
+```bash
+cp -R nest-pilot-framework my-new-backend
+cd my-new-backend
+npm install
+```
+
+### 2. Claude 템플릿 복사
+
+```bash
+cp templates/claude/CLAUDE.md ./CLAUDE.md
+cp -R templates/claude/.claude ./.claude
+```
+
+### 3. 새 앱 생성 또는 기존 앱 정리
+
+```bash
+nest generate app {appName}
+```
+
+또는 기존 `auth`, `example` 앱을 정리해서 시작할 수 있습니다.
+
+### 4. 로컬 인프라 실행
+
+macOS / Linux:
+
+```bash
+sh .docker/start.sh
+```
+
+Windows PowerShell:
+
+```powershell
+.docker/start.ps1
+```
+
+직접 Docker Compose를 실행하려면:
+
+```bash
+docker compose -f .docker/docker-compose.yml up -d
+```
+
+### 5. 앱 실행
+
+```bash
+nest start {appName} --watch
+```
+
+또는 프로젝트 스크립트에 맞춰:
+
+```bash
+npm run start {appName}
+```
+
+### 6. 상세 문서
+
+자세한 가이드는 아래 문서를 참고하세요.
+
+- `docs/starter-guide/ARCHITECTURE_PRINCIPLES.md`
+- `docs/starter-guide/NEW_PROJECT_BOOTSTRAP.md`
+- `docs/starter-guide/NEW_APP_CHECKLIST.md`
+- `docs/starter-guide/LOCAL_DEVELOPMENT.md`
+
+## Claude Code 템플릿
+
+이 저장소에는 새 프로젝트에서 바로 사용할 수 있도록 Claude Code 템플릿을 함께 제공합니다.
+
+- `templates/claude/CLAUDE.md`
+- `templates/claude/.claude/skills/nest-backend-feature-builder/SKILL.md`
+- `templates/claude/.claude/skills/local-runtime-and-compose/SKILL.md`
+- `templates/claude/.claude/skills/safe-refactor/SKILL.md`
+
+새 프로젝트 시작 시 위 파일들을 루트에 복사해서 사용하면 됩니다.
