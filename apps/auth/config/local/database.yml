@@ -8,5 +8,5 @@ database:
   timezone: 'Z'
   entities: ['dist/**/*.entity.{ts,js}']
   maxQueryExecutionTime: 1000
-  synchronize: false
+  synchronize: true
   logging: true
