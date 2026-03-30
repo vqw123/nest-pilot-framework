@@ -6,7 +6,7 @@ database:
   password: 'SuperTree!@#$7890'
   database: 'db_auth'
   timezone: 'Z'
-  entities: ['dist/**/*.entity.{ts,js}']
+  autoLoadEntities: true
   maxQueryExecutionTime: 1000
   synchronize: true
   logging: true
